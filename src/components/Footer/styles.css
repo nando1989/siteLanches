@@ -18,6 +18,8 @@
 .footer-section {
   flex: 1;
   width: 100%;
+  background-color: #333232;
+  border-radius: 10px;
 }
 
 .footer-title {
