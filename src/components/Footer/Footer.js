@@ -45,7 +45,7 @@ const Footer = () => {
           <p className="footer-text">
             Email: <a href="mailto:contato@serrafrete.com" className="footer-link">serrafrete@gmail.com</a>
           </p>
-          <p className="footer-text">Telefone: (21) 97714-2180</p>
+          <p className="footer-text">Telefone: (21)97714 -XXXX</p>21 977142180
 
         </div>
       </div>
