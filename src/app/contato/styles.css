@@ -1,0 +1,57 @@
+.containerMotoPage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  max-width: 600px;
+  margin: 2rem auto;
+  padding: 1.5rem;
+  background-color: #f9f9f9;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+
+}
+
+.containerMotoPage p{
+  padding: 0;
+
+}
+
+.motoImg {
+  width: 70%;
+  border-radius: 8px 8px 0 0;
+  object-fit: cover;
+}
+
+
+
+/* Estilo para melhorar a responsividade */
+@media (max-width: 600px) {
+  .containerMotoPage {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    width: 310px;
+    margin: 2rem auto;
+    padding: 1.5rem;
+    background-color: #f9f9f9;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    margin-top: 50px;
+  
+  }
+  
+  .containerMotoPage p{
+    padding: 0;
+  
+  }
+  
+  .motoImg {
+    width: 70%;
+    border-radius: 8px 8px 0 0;
+    object-fit: cover;
+  }
+
+  
+}
