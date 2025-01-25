@@ -29,31 +29,25 @@ const Home = () => {
           <SwiperSlide>
             <img
               className="imgBanner"
-              src="banner.png"
+              src="bannerNovo.png"
               alt="Caminhão 1"
             />
           </SwiperSlide>
           <SwiperSlide>
             <img
               className="imgBanner"
-              src="/banner.png"
+              src="/familiaCasa.png"
               alt="Caminhão 2"
             />
           </SwiperSlide>
           <SwiperSlide>
             <img
               className="imgBanner"
-              src="/banner.png"
+              src="/familiaCompra.png"
               alt="Caminhão 3"
             />
           </SwiperSlide>
-          <SwiperSlide>
-            <img
-              className="imgBanner"
-              src="/banner.png"
-              alt="Caminhão 3"
-            />
-          </SwiperSlide>
+          
         </Swiper>
       </div>
       <div className="containerForm">
