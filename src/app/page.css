@@ -99,6 +99,22 @@ button:hover {
   margin-bottom: 20px;
 }
 
+/* Estilizando as setas */
+.swiper-button-next,
+.swiper-button-prev {
+  color: yellow; /* Cor das setas */
+}
+
+/* Cor das bolinhas */
+.swiper-pagination-bullet {
+  background: yellow; /* Cor das bolinhas inativas */
+}
+
+/* Cor da bolinha ativa */
+.swiper-pagination-bullet-active {
+  background: yellow; /* Cor da bolinha ativa */
+}
+
 
 @media (max-width: 600px) {
   
@@ -153,6 +169,23 @@ button:hover {
     text-align: center;
     margin-bottom: 20px;
   }
+
+  /* Estilizando as setas */
+.swiper-button-next,
+.swiper-button-prev {
+  color: yellow; /* Cor das setas */
+}
+
+/* Cor das bolinhas */
+.swiper-pagination-bullet {
+  background: yellow; /* Cor das bolinhas inativas */
+}
+
+/* Cor da bolinha ativa */
+.swiper-pagination-bullet-active {
+  background: yellow; /* Cor da bolinha ativa */
+}
+
   
 
 
