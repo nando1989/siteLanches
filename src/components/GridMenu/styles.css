@@ -102,7 +102,7 @@
 }
 
 .imgMedium{
-  width: 200px;
+  width: 180px;
   height: 120px;
 }
 
@@ -121,6 +121,11 @@
 
 .no-underline {
   text-decoration: none; 
+}
+
+.grid-img{
+  width: 100%;
+  height: auto;
 }
 
 
