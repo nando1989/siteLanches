@@ -17,7 +17,6 @@ const Home = () => {
     <div className='container'>
       <div className='containerSlide'>
         <Navbar />
-        <h1>O melhor e mais seguro de Teresópolis</h1>
         <Swiper
           modules={[Navigation, Pagination, Autoplay]}
           navigation
@@ -29,21 +28,21 @@ const Home = () => {
           <SwiperSlide>
             <img
               className="imgBanner"
-              src="bannerNovo.png"
+              src="banner1.png"
               alt="Caminhão 1"
             />
           </SwiperSlide>
           <SwiperSlide>
             <img
               className="imgBanner"
-              src="/familiaCasa.png"
+              src="/banner2.png"
               alt="Caminhão 2"
             />
           </SwiperSlide>
           <SwiperSlide>
             <img
               className="imgBanner"
-              src="/familiaCompra.png"
+              src="/banner3.png"
               alt="Caminhão 3"
             />
           </SwiperSlide>

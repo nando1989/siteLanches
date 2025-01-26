@@ -4,7 +4,7 @@
   justify-content: center;
   gap: 1rem;
   margin-top: 2rem;
-  width: 60%;
+  width: 70%;
   border-radius: 20px;
   height: 500px;
 }
@@ -13,7 +13,8 @@
   color: #4b4b4b;
   text-align: center;
   transition: background-color 0.3s;
-  width: 220px;
+  width: 210px;
+  padding: 2px;
   height: 390px;
   text-align: center;
   display: flex;
@@ -25,9 +26,14 @@
   cursor:auto;
 }
 
+.grid-img{
+  width: 100%;
+  height: auto;
+}
+
 .textGrid{
   width: 100%;
-  height: 260px;
+  height: 240px;
   text-align: center;
   
   
