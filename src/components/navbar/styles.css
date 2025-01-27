@@ -99,8 +99,8 @@
     position: relative;
     transition: color 0.3s ease;
     border-bottom: #c00202;
-    padding-right: 12px;
-    padding-left: 12px;
+    padding-right: 8px;
+    padding-left: 8px;
   }
   
   .navbar ul li:hover {
