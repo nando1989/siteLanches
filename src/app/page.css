@@ -177,6 +177,25 @@ button:hover {
   background: rgb(2, 2, 2); /* Cor da bolinha ativa */
 }
 
+.whatsapp-button {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #25d366;
+  border-radius: 50%;
+  padding: 10px;
+}
+
+.whatsapp-button-img {
+  width: 50px;
+  height: 50px;
+}
+
+
   
 
 

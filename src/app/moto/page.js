@@ -67,7 +67,7 @@ export default function FormularioSerrafrete() {
           alt="Caminhão de frete"
           className="motoImg"
         />
-       <div className="containerFormPage"><form className="freteMotoForm" onSubmit={handleSubmit}>
+        <div className="containerFormPage"><form className="freteMotoForm" onSubmit={handleSubmit}>
           <h2>Solicite seu Frete</h2>
 
           <input
@@ -97,7 +97,7 @@ export default function FormularioSerrafrete() {
             onChange={handleInputChange}
           />
 
-<select
+          <select
             id="adicionarParada"
             name="adicionarParada"
             value={formData.adicionarParada}
@@ -142,7 +142,7 @@ export default function FormularioSerrafrete() {
               onChange={handleInputChange}
             />
           )}
-         
+
           <div className="containerDateHour">
             <div className="containerTitleDate">
               <label>Escolha a data e a hora</label>
@@ -168,7 +168,8 @@ export default function FormularioSerrafrete() {
           </div>
 
           <button type="submit">Enviar Solicitação</button>
-        </form></div> 
+         </form>
+        </div>
       </div>
     </>
   );

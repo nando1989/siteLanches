@@ -1,4 +1,4 @@
-"use client";
+"use client"; 
 import { useState, useEffect } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination, Autoplay } from "swiper/modules";
@@ -11,6 +11,7 @@ import GridMenu from "../components/GridMenu/GridMenu";
 import "./page.css";
 import Navbar from "../components/navbar/Navbar";
 import Footer from "../components/Footer/Footer";
+import WhatsApp from "@/components/whatsappButton/whatsappButton";
 
 const Home = () => {
   const [bannerImages, setBannerImages] = useState([]);
@@ -64,7 +65,9 @@ const Home = () => {
       </div>
       <div className="containerFooter">
         <Footer />
+        <WhatsApp/>
       </div>
+      
     </div>
   );
 };
