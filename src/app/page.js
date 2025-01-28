@@ -45,6 +45,7 @@ const Home = () => {
           autoplay={{ delay: 3000 }}
           loop
           className="mySwiper"
+          alt="frete de caminhão em Teresópolis"
         >
           {bannerImages.map((image, index) => (
             <SwiperSlide key={index}>
