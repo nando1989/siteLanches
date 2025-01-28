@@ -1,0 +1,9 @@
+# *
+User-agent: *
+Allow: /
+
+# Host
+Host: https://serrafrete.com.br
+
+# Sitemaps
+Sitemap: https://serrafrete.com.br/sitemap.xml

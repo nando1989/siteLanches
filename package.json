@@ -6,11 +6,13 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
+    "postbuild": "next-sitemap",
     "lint": "next lint"
   },
   "dependencies": {
     "html2canvas": "^1.4.1",
     "next": "^15.1.6",
+    "next-sitemap": "^4.2.3",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "swiper": "^11.2.1"
