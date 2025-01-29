@@ -1,5 +1,5 @@
-.containerPickupPage {
-  width: 600px;
+.containerLargePage {
+  max-width: 600px;
   margin: 2rem auto;
   padding: 1.5rem;
   background-color: #f9f9f9;
@@ -12,45 +12,71 @@
   border-radius: 8px 8px 0 0;
   object-fit: cover;
 }
+.textDegraus{
+  color:red;
+}
 
-.fretepickupForm {
+.freteLargeForm{
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  align-items: center;
+  justify-content: center;
 }
 
-.fretepickupForm h2 {
+.freteLargeForm
+  h2 {
   text-align: center;
   color: #333;
   margin-bottom: 1rem;
+
 }
 
 
-.fretepickupForm input,
-.fretepickupForm select,
-.fretepickupForm textarea {
+
+.freteLargeForm input {
   border: 1px solid #dbe91a;
   border-radius: 10px;
   font-size: 1rem;
   width: 100%;
   height: 35px;
   color: #777676;
-  cursor: pointer;
-};
 
+}
 
-.fretepickupForm input[type="date"],
-.fretepickupForm input[type="time"],
-.fretepickupForm input[type="number"] {
+input:focus::placeholder {
+  opacity: 0; /* Oculta o placeholder */
+}
+
+.freteLargeForm select,
+.freteLargeForm textarea {
+  border: 1px solid #dbe91a;
+  border-radius: 10px;
+  font-size: 1rem;
+  width: 100%;
+  height: 45px;
+  color: #777676;
+}
+
+.freteLargeForm input[type="date"],
+.freteLargeForm input[type="time"],
+.freteLargeForm input[type="number"] {
   
   width: 100%;
 }
 
-.fretepickupForm textarea {
-  resize: vertical;
+.freteLargeForm select {
+  cursor: pointer;
+  padding: 0.75rem;
 }
 
-.fretepickupForm button {
+.frete-form textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.freteLargeForm button {
+  width: 100%;
   padding: 0.75rem;
   background-color: #1eff31;
   color: #0a2405;
@@ -62,8 +88,8 @@
   transition: background-color 0.3s ease;
 }
 
-.fretepickupForm button:hover {
-  background-color: #1f9714;
+.frete-form button:hover {
+  background-color: #1c7ed6;
 }
 
 /* Estilo para campos condicionais */
@@ -71,31 +97,70 @@
   display: none;
 }
 
-.fretepickupForm .visible {
+.frete-form .visible {
   display: block;
 }
 
-input:focus::placeholder {
-  opacity: 0; /* Oculta o placeholder */
+#data{
+  width: 100%;
 }
-.containerDate{
-  width: 50%;
+
+input:focus::placeholder {
+  opacity: 0; 
+}
+
+.containerDateLarge{
+  width: 100%;
   display:flex;
   align-items: center;
   justify-content: center;
-  
+  flex-direction: row;
+
 }
 
-.containerPickupDateHora{
+.horaLarge{
+  margin: 0;
+  margin-top: 10px;
+}
+
+.dataLarge{
+  margin: 0;
+  margin-top: 10px;
+}
+
+.containerTitleDateLarge{
   width: 100%;
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
-/* Estilo para melhorar a responsividade */
-@media (max-width: 768px) {
-  .containerPickupPage {
-    width: 310px;
+.containerDataHoraLarge{
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+}
+
+.containerDateLarge{
+  width: 100%;
+  display:flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+
+}
+
+.containerInput{
+  width: 100%;
+}
+
+
+@media (max-width: 600px) {
+  .containerLargePage {
+    display: flex;
+    flex-direction: column;
+    width: 280px;
     margin: 2rem auto;
     padding: 1.5rem;
     background-color: #f9f9f9;
@@ -103,27 +168,36 @@ input:focus::placeholder {
     border-radius: 8px;
   }
 
-  .fretepickup Form{
+  .frete-form {
     gap: 0.75rem;
   }
 
-  .fretepickupForm h2 {
+  .frete-form h2 {
     font-size: 1.25rem;
   }
 
-  .fretepickupForm input,
-  .fretepickupForm select,
-  .fretepickupForm textarea {
+  .frete-form input,
+  .frete-form textarea {
     font-size: 0.9rem;
     padding: 0;
     display: flex;
     align-items: center;
     justify-content: center;
     
-   
   }
 
-  .fretepickupForm button {
+  .frete-form select{
+    width: 100%;
+  height: 35px;
+
+  }
+
+  input:focus::placeholder {
+    opacity: 0; /* Oculta o placeholder */
+  }
+
+
+  .frete-form button {
     font-size: 0.9rem;
     padding: 0.6rem;
   }
@@ -132,32 +206,28 @@ input:focus::placeholder {
     opacity: 0; /* Oculta o placeholder */
   }
 
-  .containerDate{
+  .containerDateLarge{
     width: 100%;
     display:flex;
     align-items: center;
     justify-content: center;
-    flex-direction: row;
+    flex-direction: column;
+
   }
 
-  .containerDateHourMedium{
-    width: 100%;
-    display: flex;
-    justify-content: center;
+  .horaLarge{
+    margin: 0;
+    margin-top: 10px;
   }
 
-  .containerPickupDate{
-    width: 100%;
-    display: flex;
-    justify-content: center;
+  .dataLarge{
+    margin: 0;
+    margin-top: 10px;
   }
 
-  .containerPickupDateHora{
-    width: 100%;
+  .containerDataHoraLarge{
     display: flex;
     flex-direction: row;
+    width: 100%;
   }
-
-  
-
 }

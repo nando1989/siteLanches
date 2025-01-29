@@ -12,6 +12,9 @@
   border-radius: 8px 8px 0 0;
   object-fit: cover;
 }
+.textDegraus{
+  color:red;
+}
 
 .freteLargeForm{
   display: flex;
@@ -148,12 +151,16 @@ input:focus::placeholder {
 
 }
 
+.containerInput{
+  width: 100%;
+}
+
 
 @media (max-width: 600px) {
   .containerLargePage {
     display: flex;
     flex-direction: column;
-    width: 310px;
+    width: 280px;
     margin: 2rem auto;
     padding: 1.5rem;
     background-color: #f9f9f9;
