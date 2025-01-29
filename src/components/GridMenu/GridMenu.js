@@ -33,7 +33,7 @@ export default function GridMenu() {
           </div>
           <div className="textGrid">
             <h2>Pickup</h2>
-            <p>Ideal para transportar móveis como sofá, rack, mesas, cadeiras e outros...</p>
+            <p>Ideal para transportar móveis como cama, sofá, rack, mesas, cadeiras e outros...</p>
             <button>Solicitar</button>
           </div>
         </div>
@@ -69,7 +69,7 @@ export default function GridMenu() {
               <h2>Caminhão G</h2>
             </div>
             <div>
-              <p>Ideal para mudanças de grande porte e para trajetos curtos ou longos.</p>
+              <p>o Caminhão grande é ideal para mudanças de grande porte e para trajetos curtos ou longos.</p>
             </div>
             <button>Solicitar</button>
           </div>
