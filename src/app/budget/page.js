@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import "./styles.css";
 import Navbar from "@/components/navbar/Navbar";
+import html2canvas from "html2canvas";
 
 export default function Budget() {
   const [formData, setFormData] = useState({
@@ -19,6 +20,7 @@ export default function Budget() {
     data: "",
     horario: "",
     temEscada: "",
+    quantidadeDegraus: "",
     precisaDesmontar: "",
     valor: "",
     observacaoMoto: "",
@@ -27,9 +29,7 @@ export default function Budget() {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-
     setFormData((prevData) => {
-      // Limpa campos desnecessários se "Moto" for selecionado
       if (name === "tipoVeiculo" && value === "moto") {
         return {
           ...prevData,
@@ -37,11 +37,11 @@ export default function Budget() {
           precisaAjudante: "",
           quantidadeAjudante: "",
           temEscada: "",
+          quantidadeDegraus: "",
           precisaDesmontar: "",
           tipoFrete: "",
         };
       }
-
       return {
         ...prevData,
         [name]: value,
@@ -49,12 +49,30 @@ export default function Budget() {
     });
   };
 
+  const generateImage = () => {
+    const element = document.getElementById("budget-summary");
+  
+    // Tornar visível antes da captura
+    element.style.display = "block";
+  
+    setTimeout(() => {
+      html2canvas(element, { useCORS: true, scale: 2 }).then((canvas) => {
+        const link = document.createElement("a");
+        link.href = canvas.toDataURL("image/png", 1.0); // Ajustando qualidade
+        link.download = "orcamento.png";
+        link.click();
+  
+        // Ocultar novamente após a captura
+        element.style.display = "none";
+      });
+    }, 500); // Pequeno atraso para renderizar corretamente
+  };
+  
   return (
     <div>
-      <Navbar/>
+      <Navbar />
       <h2>Montar Orçamento</h2>
       <form className="budget-form">
-        {/* Nome Completo */}
         <input
           type="text"
           name="nome"
@@ -62,8 +80,6 @@ export default function Budget() {
           value={formData.nome}
           onChange={handleInputChange}
         />
-
-        {/* Endereço de Retirada */}
         <input
           type="text"
           name="enderecoRetirada"
@@ -71,8 +87,6 @@ export default function Budget() {
           value={formData.enderecoRetirada}
           onChange={handleInputChange}
         />
-
-        {/* Endereço de Entrega */}
         <input
           type="text"
           name="enderecoEntrega"
@@ -80,8 +94,6 @@ export default function Budget() {
           value={formData.enderecoEntrega}
           onChange={handleInputChange}
         />
-
-        {/* Tipo de Veículo */}
         <select
           name="tipoVeiculo"
           value={formData.tipoVeiculo}
@@ -94,56 +106,6 @@ export default function Budget() {
           <option value="caminhaoGrande">Caminhão Grande</option>
         </select>
 
-        {/* Tipo de Carga (Moto) */}
-        {formData.tipoVeiculo === "moto" && (
-          <>
-            <select
-              name="opcionalMoto"
-              value={formData.opcionalMoto}
-              onChange={handleInputChange}
-            >
-              <option value="">Selecione o tipo de carga</option>
-              <option value="itenscilios">Utensílios</option>
-              <option value="lanche">Lanche</option>
-              <option value="documentos">Documentos</option>
-              <option value="encomendas">Encomendas</option>
-              <option value="outros">Outros</option>
-            </select>
-
-            {formData.opcionalMoto === "outros" && (
-              <textarea
-                name="observacaoMoto"
-                placeholder="Detalhe o tipo de mercadoria"
-                value={formData.observacaoMoto}
-                onChange={handleInputChange}
-              ></textarea>
-            )}
-          </>
-        )}
-
-        {/* Tipo de Frete */}
-        <select
-          name="tipoFrete"
-          value={formData.tipoFrete}
-          onChange={handleInputChange}
-        >
-          <option value="">Selecione o tipo de frete</option>
-          <option value="mudanca">Mudança</option>
-          <option value="materialConstrucao">Material de Construção</option>
-          <option value="moveis">Móveis</option>
-        </select>
-
-        {formData.tipoFrete === "moveis" && (
-          <input
-            type="number"
-            name="quantidadeMoveis"
-            placeholder="Quantidade de móveis"
-            value={formData.quantidadeMoveis}
-            onChange={handleInputChange}
-          />
-        )}
-
-        {/* Precisa de Ajudante */}
         {formData.tipoVeiculo !== "moto" && (
           <>
             <label>
@@ -173,58 +135,57 @@ export default function Budget() {
                 ))}
               </select>
             )}
+
+            <label>
+              Tem escada?
+              <select
+                name="temEscada"
+                value={formData.temEscada}
+                onChange={handleInputChange}
+              >
+                <option value="">Selecione</option>
+                <option value="sim">Sim</option>
+                <option value="nao">Não</option>
+              </select>
+            </label>
+
+            {formData.temEscada === "sim" && (
+              <>
+                <select
+                  name="quantidadeDegraus"
+                  value={formData.quantidadeDegraus}
+                  onChange={handleInputChange}
+                >
+                  <option value="">Quantidade de degraus</option>
+                  <option value="até 50">Até 50</option>
+                  <option value="+50">Mais de 50</option>
+                  <option value="+100">Mais de 100</option>
+                  <option value="+150">Mais de 150</option>
+                  <option value="+200">Mais de 200</option>
+                </select>
+
+                {formData.quantidadeDegraus === "+50" && (
+                  <p style={{ color: "red" }}>
+                    AVISO! A CADA 50 DEGRAUS, É NECESSÁRIO ACRESCENTAR +1 AJUDANTE!
+                  </p>
+                )}
+              </>
+            )}
           </>
         )}
 
-        {/* Tem Escada */}
-        {formData.tipoVeiculo !== "moto" && (
-          <label>
-            Tem escada?
-            <select
-              name="temEscada"
-              value={formData.temEscada}
-              onChange={handleInputChange}
-            >
-              <option value="">Selecione</option>
-              <option value="sim">Sim</option>
-              <option value="nao">Não</option>
-            </select>
-          </label>
-        )}
-
-        {/* Precisa Desmontar */}
-        {formData.tipoVeiculo !== "moto" && (
-          <label>
-            Precisa desmontar algo?
-            <select
-              name="precisaDesmontar"
-              value={formData.precisaDesmontar}
-              onChange={handleInputChange}
-            >
-              <option value="">Selecione</option>
-              <option value="sim">Sim</option>
-              <option value="nao">Não</option>
-            </select>
-          </label>
-        )}
-
-        {/* Data */}
         <input
           type="date"
           name="data"
           value={formData.data}
           onChange={handleInputChange}
         />
-
-        {/* Horário */}
         <input
           type="time"
           name="horario"
           value={formData.horario}
           onChange={handleInputChange}
         />
-
-        {/* Valor */}
         <input
           type="number"
           name="valor"
@@ -233,8 +194,33 @@ export default function Budget() {
           onChange={handleInputChange}
         />
 
-        <button type="submit">Gerar Orçamento</button>
+        <button type="button" onClick={generateImage}>
+          Gerar Orçamento
+        </button>
       </form>
+
+      <div id="budget-summary" className="orçamento" >
+        <h3>Orçamento</h3>
+        <p><strong>Nome:</strong> {formData.nome}</p>
+        <p><strong>Endereço de Retirada:</strong> {formData.enderecoRetirada}</p>
+        <p><strong>Endereço de Entrega:</strong> {formData.enderecoEntrega}</p>
+        <p><strong>Tipo de Veículo:</strong> {formData.tipoVeiculo}</p>
+        {formData.tipoVeiculo !== "moto" && (
+          <>
+            <p><strong>Precisa de Ajudante:</strong> {formData.precisaAjudante}</p>
+            {formData.precisaAjudante === "sim" && (
+              <p><strong>Quantidade de Ajudantes:</strong> {formData.quantidadeAjudante}</p>
+            )}
+            <p><strong>Tem Escada:</strong> {formData.temEscada}</p>
+            {formData.temEscada === "sim" && (
+              <p><strong>Quantidade de Degraus:</strong> {formData.quantidadeDegraus}</p>
+            )}
+          </>
+        )}
+        <p><strong>Data:</strong> {formData.data}</p>
+        <p><strong>Horário:</strong> {formData.horario}</p>
+        <p><strong>Valor:</strong> R$ {formData.valor}</p>
+      </div>
     </div>
   );
 }

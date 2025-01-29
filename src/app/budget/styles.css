@@ -76,6 +76,12 @@ h2 {
   transition: all 0.2s ease-in-out;
 }
 
+.orçamento{
+  width: 248px;
+  height: 350px;
+  font-size: medium;
+}
+
 /* Responsividade */
 @media (max-width: 768px) {
   .budget-form {
