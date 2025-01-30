@@ -82,9 +82,91 @@ h2 {
   font-size: medium;
 }
 
+.containerInput{
+  width: 100%;
+}
+
+.budget-summary {
+  font-family: 'Arial', sans-serif;
+  background-color: #f9f9f9;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.budget-title {
+  text-align: center;
+  font-size: 24px;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+h4 {
+  font-size: 18px;
+  color: #007BFF;
+  margin-top: 20px;
+}
+
+.customer-info, .transport-info, .schedule-info, .cost-info {
+  margin-bottom: 20px;
+}
+
+strong {
+  color: #555;
+}
+
+p {
+  margin: 5px 0;
+}
+
+p:last-child {
+  margin-bottom: 0;
+}
+
+
 /* Responsividade */
 @media (max-width: 768px) {
   .budget-form {
     padding: 15px;
   }
+
+  .containerInput{
+    width: 100%;
+  }
+
+  .containerInput input{
+    width: 90%;
+    margin: 0;
+  }
+
+  .orçamento{
+    display: flex;
+    padding-left: 5px;
+    flex-direction: column;
+    width: 248px;
+    height: 350px;
+    font-size: medium;
+  }
+
+  .budget-summary{
+    border: solid 2px blue;
+    margin: 2px;
+    margin-bottom: 5px;
+    padding-bottom: 5px;
+
+  }
+
+  .budget-title{
+    width: 100%;
+    height: 30px;
+    background-color: #007BFF;
+  }
+
+  .budget-title-h1{
+    width: 100%;
+  }
+
+  
 }

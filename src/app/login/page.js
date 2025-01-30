@@ -12,10 +12,10 @@ export default function Login() {
 
   const handleLogin = (e) => {
     e.preventDefault();
-    // Adicione sua lógica de autenticação aqui
+    
     if (username === "serrafrete" && password === "3641") {
       alert("Login bem-sucedido!");
-      router.push("/budget"); // Navega para a página de administração
+      router.push("/budget");
     } else {
       alert("Credenciais inválidas!");
     }
