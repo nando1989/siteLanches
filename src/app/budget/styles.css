@@ -90,27 +90,48 @@ h2 {
   font-family: 'Arial', sans-serif;
   background-color: #f9f9f9;
   padding: 20px;
-  border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   max-width: 600px;
   margin: 0 auto;
+  border: solid 2px rgb(68, 68, 68);
+  margin: 2px;
+  margin-bottom: 5px;
+  padding-bottom: 5px;
 }
 
-.budget-title {
+.budget-title-h1 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 50px;
   text-align: center;
   font-size: 24px;
   margin-bottom: 20px;
   color: #333;
+  background-color: #007BFF;
+}
+
+.customer-info p {
+  width: 100%;
+  font-size: 18px;
+  margin-left: 10px;
 }
 
 h4 {
-  font-size: 18px;
+  font-size: 25px;
   color: #007BFF;
   margin-top: 20px;
 }
 
 .customer-info, .transport-info, .schedule-info, .cost-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   margin-bottom: 20px;
+  border: #333 solid 1px;
+  padding-bottom: 8px;
 }
 
 strong {

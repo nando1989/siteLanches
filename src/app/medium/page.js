@@ -54,7 +54,7 @@ export default function FormularioSerrafrete() {
     const mensagem = `
     *Solicitação de Frete*
   
-            *Caminhão grande* 
+            *Caminhão Medio* 
   
     👤 *Nome:* _${nome}_  
     📍 *Retirada:* _${enderecoRetirada}_  
