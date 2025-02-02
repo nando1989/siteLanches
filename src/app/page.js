@@ -1,4 +1,4 @@
-"use client"; 
+"use client";
 
 import { useState, useEffect } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -61,14 +61,16 @@ const Home = () => {
         </Swiper>
       </div>
       <div className="containerForm">
-        <h3>Escolha o serviço abaixo.</h3>
+        <div className="containerTitleServices">
+          <h3>Escolha o serviço abaixo.</h3>
+        </div>
         <GridMenu />
       </div>
       <div className="containerFooter">
         <Footer />
-        <WhatsApp/>
+        <WhatsApp />
       </div>
-      
+
     </div>
   );
 };
