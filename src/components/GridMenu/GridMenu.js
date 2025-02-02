@@ -1,6 +1,5 @@
 import Link from "next/link";
 import './styles.css';
-import Image from 'next/image';
 
 export default function GridMenu() {
   return (

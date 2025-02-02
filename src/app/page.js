@@ -21,7 +21,7 @@ const Home = () => {
     const updateImages = () => {
       if (window.innerWidth <= 768) {
         // Imagens para mobile
-        setBannerImages(["/banner4.png", "/banner5.png", "/banner6.png"]);
+        setBannerImages(["/banner7.png", "/banner8.png", "/banner9.png"]);
       } else {
         // Imagens para web
         setBannerImages(["/banner1.png", "/banner2.png", "/banner3.png"]);
