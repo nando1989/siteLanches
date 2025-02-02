@@ -11,7 +11,7 @@ export default function FormularioSerrafrete() {
     <div className="containerMotoPage">
 
       <img
-        src="/banner.png"
+        src="/sobre.png"
         alt="Caminhão de frete"
         className="motoImg"
       />
