@@ -10,14 +10,15 @@ export default function Navbar() {
         </li>
 
         <li>
-          <Link href="/login">Admin</Link>
-        </li>
-        <li>
           <Link href="/sobre">Sobre</Link>
         </li>
 
         <li>
           <Link href="/contato">Contato</Link>
+        </li>
+
+        <li>
+          <Link href="/login">Admin</Link>
         </li>
         
         
