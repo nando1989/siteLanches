@@ -19,27 +19,27 @@ const CartModal = ({ onClose }) => {
 
   const validarCampos = () => {
     if (!nome) {
-      setError("O nome é obrigatórios!");
+      setError("⚠️O nome é obrigatórios!");
       return false;
     }
 
     if (!telefone) {
-      setError("O telefone é obrigatórios!");
+      setError("⚠️O telefone é obrigatórios!");
       return false;
     }
 
     if (telefone.length !== 11 || !/^\d{11}$/.test(telefone)) {
-      setError("Verifique se não está faltando numero");
+      setError("⚠️Verifique se não está faltando numero");
       return false;
     }
 
     if (tipoEntrega === "Entrega" && (!endereco)) {
-      setError("Endereço é obrigatório para entrega.");
+      setError("⚠️Endereço é obrigatório para entrega");
       return false;
     }
 
     if (tipoEntrega === "Entrega" && (!referencia)) {
-      setError("Referência é obrigatórios para entrega.");
+      setError("⚠️Referência é obrigatórios para entrega");
       return false;
     }
 
