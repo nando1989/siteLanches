@@ -51,7 +51,7 @@ Obrigado pela preferência! 🎉
 
   const enviarWhatsApp = () => {
     const mensagem = gerarMensagemWhatsApp();
-    const url = `https://wa.me/5521997247365?text=${mensagem}`;
+    const url = `https://wa.me/5521977384132?text=${mensagem}`;
     window.open(url, "_blank");
   };
 
