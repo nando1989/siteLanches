@@ -13,7 +13,43 @@ const CartModal = ({ onClose }) => {
   const [telefone, setTelefone] = useState("");
   const [endereco, setEndereco] = useState("");
   const [referencia, setReferencia] = useState("");
-  const [tipoEntrega, setTipoEntrega] = useState("Entrega"); // Estado para o tipo de entrega
+  const [tipoEntrega, setTipoEntrega] = useState("Entrega");
+
+  const [error, setError] = useState("");
+
+  const validarCampos = () => {
+    if (!nome) {
+      setError("O nome é obrigatórios!");
+      return false;
+    }
+
+    if (!telefone) {
+      setError("O telefone é obrigatórios!");
+      return false;
+    }
+
+    if (telefone.length !== 11 || !/^\d{11}$/.test(telefone)) {
+      setError("Verifique se não está faltando numero");
+      return false;
+    }
+
+    if (tipoEntrega === "Entrega" && (!endereco)) {
+      setError("Endereço é obrigatório para entrega.");
+      return false;
+    }
+
+    if (tipoEntrega === "Entrega" && (!referencia)) {
+      setError("Referência é obrigatórios para entrega.");
+      return false;
+    }
+
+    if (!paymentMethod) {
+      setError("Escolha uma forma de pagamento.");
+      return false;
+    }
+
+    return true;
+  };
 
   const gerarMensagemWhatsApp = () => {
     const itensCarrinho = cart
@@ -31,16 +67,11 @@ ${itensCarrinho}
 👤 *Dados do Cliente:*
 - Nome: ${nome}
 - Telefone: ${telefone}
-${tipoEntrega === "Entrega" ? `
-- Endereço: ${endereco}
-- Referência: ${referencia}
-` : ""}
+${tipoEntrega === "Entrega" ? `- Endereço: ${endereco}\n- Referência: ${referencia}` : ""}
 
-🚚 *Tipo de Entrega:*
-- ${tipoEntrega}
+🚚 *Tipo de Entrega:* ${tipoEntrega}
 
-💳 *Forma de Pagamento:*
-- Método: ${paymentMethod}
+💳 *Forma de Pagamento:* ${paymentMethod}
 ${paymentMethod === "Crédito" ? `- Bandeira: ${cardBrand}` : ""}
 
 Obrigado pela preferência! 🎉
@@ -50,6 +81,8 @@ Obrigado pela preferência! 🎉
   };
 
   const enviarWhatsApp = () => {
+    if (!validarCampos()) return;
+
     const mensagem = gerarMensagemWhatsApp();
     const url = `https://wa.me/5521977384132?text=${mensagem}`;
     window.open(url, "_blank");
@@ -60,11 +93,12 @@ Obrigado pela preferência! 🎉
       <div className="modal-cart">
         <div className="modal-itens">
           <div className='modal-button-close'>
+            <h2>Carrinho</h2>
             <button className="button-close" onClick={onClose}>
               <FiX size={20} />
             </button>
           </div>
-          <h2>Carrinho</h2>
+
           {cart.length === 0 ? (
             <p>Seu carrinho está vazio.</p>
           ) : (
@@ -82,6 +116,7 @@ Obrigado pela preferência! 🎉
           <div className='modal-total'>
             <h3>Total: R$ {totalCarrinho.toFixed(2)}</h3>
           </div>
+
           <div>
             <h2>Tipo de Entrega</h2>
             <div className="deliveryOptions">
@@ -100,43 +135,54 @@ Obrigado pela preferência! 🎉
               ))}
             </div>
           </div>
-          {tipoEntrega === "Entrega" && (
-            <div className='modal-data'>
-              <h2>Seus dados</h2>
-              <label>Nome completo</label>
-              <input
-                type="text"
-                placeholder='Digite seu nome'
-                value={nome}
-                onChange={(e) => setNome(e.target.value)}
-              />
-              <label>Telefone</label>
-              <input
-                type="number"
-                placeholder='Digite seu telefone'
-                value={telefone}
-                onChange={(e) => setTelefone(e.target.value)}
-              />
-              <label>Endereço</label>
-              <input
-                type="text"
-                placeholder='Digite seu endereço'
-                value={endereco}
-                onChange={(e) => setEndereco(e.target.value)}
-              />
-              <label>Referência</label>
-              <input
-                type="text"
-                placeholder='De alguma referência da sua casa'
-                value={referencia}
-                onChange={(e) => setReferencia(e.target.value)}
-              />
-            </div>
-          )}
+
+          <div className='modal-data'>
+            <h2>Seus dados</h2>
+            <label>Nome completo</label>
+            <input
+              type="text"
+              placeholder='Digite seu nome'
+              value={nome}
+              onChange={(e) => setNome(e.target.value)}
+            />
+            <label>Telefone</label>
+            <input
+              type="text"
+              placeholder='Digite seu telefone'
+              value={telefone}
+              maxLength={11}
+              onChange={(e) => {
+                const onlyNumbers = e.target.value.replace(/\D/g, "");
+                setTelefone(onlyNumbers.slice(0, 11));
+              }}
+            />
+            {tipoEntrega === "Entrega" && (
+              <>
+                <label>Endereço e numero</label>
+                <input
+                  type="text"
+                  placeholder='Digite seu endereço com o numero'
+                  value={endereco}
+                  onChange={(e) => setEndereco(e.target.value)}
+                />
+                <label>Referência</label>
+                <input
+                  type="text"
+                  placeholder='De alguma referência da sua casa'
+                  value={referencia}
+                  onChange={(e) => setReferencia(e.target.value)}
+                />
+              </>
+            )}
+      
+
+            {error && <div className="container-error-message"><p className="error-message">{error}</p></div>}
+          </div>
+
           <div>
             <h2>Forma de Pagamento</h2>
             <div className="paymentOptions">
-              {["dinheiro","Pix", "Crédito", "Débito"].map((method) => (
+              {["Dinheiro", "Pix", "Crédito", "Débito"].map((method) => (
                 <label key={method} className="radioLabel">
                   <input
                     type="radio"
@@ -174,6 +220,8 @@ Obrigado pela preferência! 🎉
               </div>
             )}
           </div>
+
+          
           <div className='modal-button-buy'>
             <button className="button-finally" onClick={enviarWhatsApp}>
               Finalizar compra
