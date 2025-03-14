@@ -11,15 +11,14 @@ const Footer = () => {
           
         <div className="containerImgFooter">
           <img
-            src="/logo.png"
+            src="/logoLanches.png"
             alt="logo"
             className="motoImgFooter"
           />
         </div>
-          <h3 className="footer-title">Sobre a Serrafrete</h3>
+          <h3 className="footer-title">Sobre a Super Lanches</h3>
           <p className="footer-text">
-            Conectamos você aos melhores motoristas para garantir fretes com compromisso, qualidade e confiança.
-            Nossa missão é simplificar sua logística com excelência.
+            A melhor lanchonete da região, com um atendimento super rápido e uma entrega masi rápida ainda..
           </p>
         </div>
 
@@ -43,7 +42,7 @@ const Footer = () => {
         <div className="footer-section">
           <h3 className="footer-title">Contato</h3>
           <p className="footer-text">
-            Email: <a href="mailto:contato@serrafrete.com" className="footer-link">serrafrete@gmail.com</a>
+            Email: <a href="mailto:contato@serrafrete.com" className="footer-link">superlanches@gmail.com</a>
           </p>
           <p className="footer-text">Telefone: (21)97714-2180</p>
 
@@ -52,7 +51,7 @@ const Footer = () => {
 
 
       <div className="footer-copyright">
-        <p>&copy; {new Date().getFullYear()} Serrafrete. Todos os direitos reservados.</p>
+        <p>&copy; {new Date().getFullYear()} SuperLanches. Todos os direitos reservados.</p>
       </div>
     </footer>
   );

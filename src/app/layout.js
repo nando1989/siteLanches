@@ -1,16 +1,22 @@
-
-import "./globals.css";
+// src/app/layout.js
+import CartIcon from '@/components/CartIcon/cartIcon';
+import { CartProvider } from '../../src/context/CartContext'; // Importe o CartProvider
+import './globals.css';
 
 export const metadata = {
-  title: "Serra Frete",
-  description: "Intermediação de serviços de frete.",
+  title: "Site mestre",
+  description: "Lanchonete.",
 };
 
 export default function RootLayout({ children }) {
   return (
     <html lang="pt-BR">
       <body>
-        <main>{children}</main>
+        {/* Envolva o children com o CartProvider */}
+        <CartProvider>
+          <main>{children}</main>
+          <CartIcon/>
+        </CartProvider>
       </body>
     </html>
   );
