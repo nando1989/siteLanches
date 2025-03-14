@@ -18,7 +18,7 @@
 }
 
 .motoImg {
-  width: 70%;
+  width: 50%;
   border-radius: 8px 8px 0 0;
   object-fit: cover;
 }
@@ -44,11 +44,18 @@
   
   .containerMotoPage p{
     padding: 0;
+    text-align: center;
+  
+  }
+
+  .containerMotoPage h1{
+    padding: 0;
+    text-align: center;
   
   }
   
   .motoImg {
-    width: 100%;
+    width: 50%;
     border-radius: 8px 8px 0 0;
     object-fit: cover;
   }
