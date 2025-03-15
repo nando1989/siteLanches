@@ -275,8 +275,9 @@ const Home = () => {
           className="imghamburguer"
         />
         <Card
-          title="Guaravita 300ml"
-          description="Escolha seus Salgadinhos"
+          title="Guaravita"
+          description="Copo com 300 ml"
+          composição="Copo com 350 ml"
           price="3,00"
           imageUrl="/guaravita.png"
           itens={["guaravita"]}
@@ -284,22 +285,22 @@ const Home = () => {
           precoFixo={true}
         />
         <Card
-          title="50 Salgadinhos"
-          description="Escolha seus Salgadinhos"
-          composição="Mínimo de 50 peças"
-          price="50,00"
-          imageUrl="/salgado02.png"
-          itens={["Coxinha", "Risole", "Kibe", "Bolinha de queijo", "risole", "salsicha"]}
+          title="Coca-cola"
+          description="Lata com 350 ml"
+          composição="lata com 350 ml"
+          price="7,00"
+          imageUrl="/cocacola.png"
+          itens={["Coca-cola"]}
           limiteMaximo={50}
           precoFixo={true}
         />
         <Card
-          title="100 Salgadinhos"
-          description="Escolha seus Salgadinhos"
-          composição="Mínimo de 100 peças"
-          price="75,00"
-          imageUrl="/salgado03.png"
-          itens={["Coxinha", "Risole", "Kibe", "Bolinha de queijo", "risole", "salsicha"]}
+          title="Suco de laranja"
+          description="Copo com 250 ml"
+          composição="Copo com 250 ml"
+          price="5,00"
+          imageUrl="/suco.png"
+          itens={["Suco natural"]}
           limiteMaximo={100}
           precoFixo={true}
         />
