@@ -23,7 +23,7 @@ const Home = () => {
         setBannerImages(["/banner7.avif", "/banner8.avif", "/banner9.avif", "/banner10.avif"]);
       } else {
         // Imagens para web
-        setBannerImages(["/banner1.png", "/banner2.png", "/banner3.png"]);
+        setBannerImages(["/banner1.avif", "/banner2.avif", "/banner3.avif"]);
       }
     };
 
