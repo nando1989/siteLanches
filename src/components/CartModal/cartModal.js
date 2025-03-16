@@ -20,7 +20,7 @@ const CartModal = ({ onClose }) => {
   const [error, setError] = useState("");
 
    // Função para formatar o valor do troco
-   const formatarTroco = (valor) => {
+    const formatarTroco = (valor) => {
     // Remove tudo que não é número
     const apenasNumeros = valor.replace(/\D/g, "");
 

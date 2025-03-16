@@ -37,6 +37,7 @@ const Card = ({ title, description, price, imageUrl, itens, hasCheckbox, checkbo
           <div className="card-content">
             <h2 className="card-title">{title}</h2>
             <p className="card-description">{description}</p>
+            
             <div className="container-card-price">
               <p className="card-price">{price}</p>
               <button className="card-button">Pedir</button>

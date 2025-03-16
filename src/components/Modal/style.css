@@ -189,6 +189,25 @@
   width: 100%;
 }
 
+.observacao-container {
+  margin-top: 20px;
+}
+
+.observacao-container label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.observacao-container textarea {
+  width: 100%;
+  height: 80px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  resize: vertical; /* Permite redimensionar verticalmente */
+}
+
 
 
 
@@ -399,6 +418,25 @@
 }
 .vermelho{
   color: red;
+}
+
+.observacao-container {
+  margin-top: 20px;
+}
+
+.observacao-container label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.observacao-container textarea {
+  width: 100%;
+  height: 80px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  resize: vertical; /* Permite redimensionar verticalmente */
 }
 
 }
