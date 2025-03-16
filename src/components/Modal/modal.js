@@ -4,8 +4,8 @@ import { useCart } from '../../context/CartContext';
 
 export const Modal = ({ isOpen, onClose, titulo, composição, imageUrl, observation, price, itens = [], hasCheckbox = false, checkboxLabels = {}, limiteMaximo = 30 }) => {
   const [quantidades, setQuantidades] = useState({});
-  const [checkedItems, setCheckedItems] = useState({});
   const [mostrarAviso, setMostrarAviso] = useState(false);
+  const [localObservation, setLocalObservation] = useState(observation || ""); // Estado local para observation
   const { addToCart } = useCart();
 
   useEffect(() => {
@@ -45,41 +45,35 @@ export const Modal = ({ isOpen, onClose, titulo, composição, imageUrl, observa
   };
 
   const handleAddToCart = () => {
-    console.log("Preço recebido:", price); // Debug
-  
-    const precoNumerico = parseFloat(price); // Converte price para número
-  
     const itensSelecionados = Object.entries(quantidades)
       .filter(([_, quantidade]) => quantidade > 0);
-  
+
     if (itensSelecionados.length === 0) {
       setMostrarAviso(true);
       return;
     }
-  
+
     setMostrarAviso(false);
-  
+
     const itensParaCarrinho = itensSelecionados.map(([item, quantidade]) => {
-      const precoNumerico = parseFloat(price); 
-      const quantidadeNumerica = parseInt(quantidade) || 0; 
-  
+      const precoNumerico = parseFloat(price);
+      const quantidadeNumerica = parseInt(quantidade) || 0;
+
       return {
         name: item,
         quantity: quantidadeNumerica,
-        price: precoNumerico, 
-        total: precoNumerico * quantidadeNumerica, 
+        price: precoNumerico,
+        total: precoNumerico * quantidadeNumerica,
+        observation: localObservation, // Usa o estado local
       };
     });
-  
 
-    console.log("Itens adicionados ao carrinho:", itensParaCarrinho); 
     itensParaCarrinho.forEach((item) => addToCart(item));
-  
-   
+
     setTimeout(() => {
       onClose();
     }, 100);
-};
+  };
 
   if (!isOpen) return null;
 
@@ -102,7 +96,12 @@ export const Modal = ({ isOpen, onClose, titulo, composição, imageUrl, observa
             <h2>{titulo}</h2>
             <h3 className="vermelho">{price}</h3>
             <p>{composição}</p>
-            <textarea  className="area-observation" placeholder="Ex. tirar cebola, ovo, etc.">{observation}</textarea>
+            <textarea
+              className="area-observation"
+              placeholder="Ex. tirar cebola, ovo, etc."
+              value={localObservation}
+              onChange={(e) => setLocalObservation(e.target.value)}
+            />
           </div>
 
           {itens.length > 0 ? (

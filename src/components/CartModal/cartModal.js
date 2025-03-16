@@ -94,30 +94,38 @@ const CartModal = ({ onClose }) => {
 
   const gerarMensagemWhatsApp = () => {
     const itensCarrinho = cart
-      .map((item) => `${item.name} - ${item.quantity}x - R$ ${item.total.toFixed(2)}`)
+      .map((item) => {
+        let itemText = `${item.name} - ${item.quantity}x - R$ ${item.total.toFixed(2)}`;
+        if (item.observation) {
+          itemText += `\n   _Observação: ${item.observation}_ 
+          
+          `; // Adiciona a observação ao item
+        }
+        return itemText;
+      })
       .join("\n");
 
     const mensagem = `
-📋 *Pedido Realizado* 📋
-
-🛒 *Itens do Carrinho:*
-${itensCarrinho}
-
-💰 *Total: R$ ${totalCarrinho.toFixed(2)}*
-
-👤 *Dados do Cliente:*
-- Nome: ${nome}
-- Telefone: ${telefone}
-${tipoEntrega === "Entrega" ? `- Endereço: ${endereco}\n- Referência: ${referencia}` : ""}
-
-🚚 *Tipo de Entrega:* ${tipoEntrega}
-${tipoEntrega === "Retirada" ? `- Consumir no Local: ${consumirNoLocal}` : ""}
-
-💳 *Forma de Pagamento:* ${paymentMethod}
-${paymentMethod === "Crédito" ? `- Bandeira: ${cardBrand}` : ""}
-${paymentMethod === "Dinheiro" && precisaDeTroco === "Sim" ? `- Troco para quanto: R$ ${trocoPara}` : ""}
-
-Obrigado pela preferência! 🎉
+  📋 *Pedido Realizado* 📋
+  
+  🛒 *Itens do Carrinho:*
+  ${itensCarrinho}
+  
+  💰 *Total: R$ ${totalCarrinho.toFixed(2)}*
+  
+  👤 *Dados do Cliente:*
+  - Nome: ${nome}
+  - Telefone: ${telefone}
+  ${tipoEntrega === "Entrega" ? `- Endereço: ${endereco}\n- Referência: ${referencia}` : ""}
+  
+  🚚 *Tipo de Entrega:* ${tipoEntrega}
+  ${tipoEntrega === "Retirada" ? `- Consumir no Local: ${consumirNoLocal}` : ""}
+  
+  💳 *Forma de Pagamento:* ${paymentMethod}
+  ${paymentMethod === "Crédito" ? `- Bandeira: ${cardBrand}` : ""}
+  ${paymentMethod === "Dinheiro" && precisaDeTroco === "Sim" ? `- Troco para quanto: R$ ${trocoPara}` : ""}
+  
+  Obrigado pela preferência! 🎉
     `;
 
     return encodeURIComponent(mensagem);
@@ -141,14 +149,18 @@ Obrigado pela preferência! 🎉
               <FiX size={20} />
             </button>
           </div>
-
+          
+          <div className="modal-itens-observation">
           {cart.length === 0 ? (
             <p>Seu carrinho está vazio.</p>
           ) : (
             <ul>
               {cart.map((item, index) => (
                 <li key={index}>
+                  <div className="modal-observation-item-column">
                   {item.name} - {item.quantity}x - R$ {item.total.toFixed(2)}
+                  {item.observation && <p>Observação: {item.observation}</p>}
+                  </div>
                   <button className="button-remove" onClick={() => removeFromCart(index)}>
                     <FiTrash2 size={16} />
                   </button>
@@ -156,6 +168,8 @@ Obrigado pela preferência! 🎉
               ))}
             </ul>
           )}
+          </div>
+
           <div className='modal-total'>
             <h3>Total: R$ {totalCarrinho.toFixed(2)}</h3>
           </div>
