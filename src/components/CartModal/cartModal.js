@@ -14,22 +14,45 @@ const CartModal = ({ onClose }) => {
   const [endereco, setEndereco] = useState("");
   const [referencia, setReferencia] = useState("");
   const [tipoEntrega, setTipoEntrega] = useState("Entrega");
+  const [consumirNoLocal, setConsumirNoLocal] = useState(null);
+  const [trocoPara, setTrocoPara] = useState("00,00")
 
   const [error, setError] = useState("");
 
+   // Função para formatar o valor do troco
+   const formatarTroco = (valor) => {
+    // Remove tudo que não é número
+    const apenasNumeros = valor.replace(/\D/g, "");
+
+    // Garante que o valor tenha pelo menos dois dígitos (para os centavos)
+    const valorComZeros = apenasNumeros.padStart(2, "0");
+
+    // Separa a parte inteira dos centavos
+    const parteInteira = valorComZeros.slice(0, -2) || "0";
+    const centavos = valorComZeros.slice(-2);
+
+    // Remove zeros à esquerda da parte inteira, exceto se for zero
+    const parteInteiraFormatada = parteInteira.replace(/^0+/, "") || "0";
+
+    // Junta a parte inteira e os centavos com a vírgula
+    const valorFormatado = `${parteInteiraFormatada},${centavos}`;
+
+    return valorFormatado;
+  };
+
   const validarCampos = () => {
     if (!nome) {
-      setError("⚠️O nome é obrigatórios!");
+      setError("⚠️O nome é obrigatório!");
       return false;
     }
 
     if (!telefone) {
-      setError("⚠️O telefone é obrigatórios!");
+      setError("⚠️O telefone é obrigatório!");
       return false;
     }
 
     if (telefone.length !== 11 || !/^\d{11}$/.test(telefone)) {
-      setError("⚠️Verifique se não está faltando numero");
+      setError("⚠️Verifique se não está faltando número");
       return false;
     }
 
@@ -39,12 +62,17 @@ const CartModal = ({ onClose }) => {
     }
 
     if (tipoEntrega === "Entrega" && (!referencia)) {
-      setError("⚠️Referência é obrigatórios para entrega");
+      setError("⚠️Referência é obrigatória para entrega");
       return false;
     }
 
     if (!paymentMethod) {
       setError("Escolha uma forma de pagamento.");
+      return false;
+    }
+
+    if (paymentMethod === "Dinheiro" && !trocoPara) {
+      setError("⚠️Informe o troco para quanto.");
       return false;
     }
 
@@ -70,9 +98,11 @@ ${itensCarrinho}
 ${tipoEntrega === "Entrega" ? `- Endereço: ${endereco}\n- Referência: ${referencia}` : ""}
 
 🚚 *Tipo de Entrega:* ${tipoEntrega}
+${tipoEntrega === "Retirada" ? `- Consumir no Local: ${consumirNoLocal}` : ""}
 
 💳 *Forma de Pagamento:* ${paymentMethod}
 ${paymentMethod === "Crédito" ? `- Bandeira: ${cardBrand}` : ""}
+${paymentMethod === "Dinheiro" ? `- Troco para quanto: R$ ${trocoPara}` : ""}
 
 Obrigado pela preferência! 🎉
     `;
@@ -117,6 +147,7 @@ Obrigado pela preferência! 🎉
             <h3>Total: R$ {totalCarrinho.toFixed(2)}</h3>
           </div>
 
+          {/* Tipo de Entrega */}
           <div>
             <h2>Tipo de Entrega</h2>
             <div className="deliveryOptions">
@@ -127,7 +158,10 @@ Obrigado pela preferência! 🎉
                     name="tipoEntrega"
                     value={option}
                     checked={tipoEntrega === option}
-                    onChange={() => setTipoEntrega(option)}
+                    onChange={() => {
+                      setTipoEntrega(option);
+                      setConsumirNoLocal(null); // Resetar caso mude de opção
+                    }}
                   />
                   <span className="radioCircle"></span>
                   {option}
@@ -135,6 +169,28 @@ Obrigado pela preferência! 🎉
               ))}
             </div>
           </div>
+
+          {/* Opção "Consumir no Local" apenas quando "Retirada" for selecionada */}
+          {tipoEntrega === "Retirada" && (
+            <div>
+              <h2>Consumir no Local?</h2>
+              <div className="deliveryOptions">
+                {["Sim", "Não"].map((option) => (
+                  <label key={option} className="radioLabel">
+                    <input
+                      type="radio"
+                      name="consumirNoLocal"
+                      value={option}
+                      checked={consumirNoLocal === option}
+                      onChange={() => setConsumirNoLocal(option)}
+                    />
+                    <span className="radioCircle"></span>
+                    {option}
+                  </label>
+                ))}
+              </div>
+            </div>
+          )}
 
           <div className='modal-data'>
             <h2>Seus dados</h2>
@@ -174,7 +230,6 @@ Obrigado pela preferência! 🎉
                 />
               </>
             )}
-      
 
             {error && <div className="container-error-message"><p className="error-message">{error}</p></div>}
           </div>
@@ -219,9 +274,19 @@ Obrigado pela preferência! 🎉
                 </div>
               </div>
             )}
+            {paymentMethod === "Dinheiro" && (
+              <div className="trocoPara">
+                <label>Troco para quanto?</label>
+                <input
+                  type="text"
+                  placeholder='Digite o valor do troco'
+                  value={trocoPara}
+                  onChange={(e) => setTrocoPara(formatarTroco(e.target.value))}
+                />
+              </div>
+            )}
           </div>
 
-          
           <div className='modal-button-buy'>
             <button className="button-finally" onClick={enviarWhatsApp}>
               Finalizar compra
