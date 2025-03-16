@@ -15,12 +15,13 @@ const CartModal = ({ onClose }) => {
   const [referencia, setReferencia] = useState("");
   const [tipoEntrega, setTipoEntrega] = useState("Entrega");
   const [consumirNoLocal, setConsumirNoLocal] = useState(null);
-  const [trocoPara, setTrocoPara] = useState("00,00")
+  const [precisaDeTroco, setPrecisaDeTroco] = useState(null); // Novo estado para controlar se precisa de troco
+  const [trocoPara, setTrocoPara] = useState("00,00");
 
   const [error, setError] = useState("");
 
-   // Função para formatar o valor do troco
-    const formatarTroco = (valor) => {
+  // Função para formatar o valor do troco
+  const formatarTroco = (valor) => {
     // Remove tudo que não é número
     const apenasNumeros = valor.replace(/\D/g, "");
 
@@ -66,12 +67,22 @@ const CartModal = ({ onClose }) => {
       return false;
     }
 
+    if (tipoEntrega === "Retirada" && !consumirNoLocal) {
+      setError("⚠️Selecione se vai consumir no local ou não.");
+      return false;
+    }
+
     if (!paymentMethod) {
       setError("Escolha uma forma de pagamento.");
       return false;
     }
 
-    if (paymentMethod === "Dinheiro" && !trocoPara) {
+    if (paymentMethod === "Dinheiro" && precisaDeTroco === "Sim" && !trocoPara) {
+      setError("⚠️Informe o troco para quanto.");
+      return false;
+    }
+
+    if (paymentMethod === "Dinheiro" && precisaDeTroco === "Sim" && !trocoPara) {
       setError("⚠️Informe o troco para quanto.");
       return false;
     }
@@ -102,7 +113,7 @@ ${tipoEntrega === "Retirada" ? `- Consumir no Local: ${consumirNoLocal}` : ""}
 
 💳 *Forma de Pagamento:* ${paymentMethod}
 ${paymentMethod === "Crédito" ? `- Bandeira: ${cardBrand}` : ""}
-${paymentMethod === "Dinheiro" ? `- Troco para quanto: R$ ${trocoPara}` : ""}
+${paymentMethod === "Dinheiro" && precisaDeTroco === "Sim" ? `- Troco para quanto: R$ ${trocoPara}` : ""}
 
 Obrigado pela preferência! 🎉
     `;
@@ -189,6 +200,11 @@ Obrigado pela preferência! 🎉
                   </label>
                 ))}
               </div>
+              {error && tipoEntrega === "Retirada" && !consumirNoLocal && (
+                <div className="container-error-message">
+                  <p className="error-message">{error}</p>
+                </div>
+              )}
             </div>
           )}
 
@@ -231,7 +247,6 @@ Obrigado pela preferência! 🎉
               </>
             )}
 
-            {error && <div className="container-error-message"><p className="error-message">{error}</p></div>}
           </div>
 
           <div>
@@ -247,6 +262,7 @@ Obrigado pela preferência! 🎉
                     onChange={() => {
                       setPaymentMethod(method);
                       setCardBrand(null);
+                      setPrecisaDeTroco(null); // Resetar ao mudar o método de pagamento
                     }}
                   />
                   <span className="radioCircle"></span>
@@ -275,14 +291,37 @@ Obrigado pela preferência! 🎉
               </div>
             )}
             {paymentMethod === "Dinheiro" && (
-              <div className="trocoPara">
-                <label>Troco para quanto?</label>
-                <input
-                  type="text"
-                  placeholder='Digite o valor do troco'
-                  value={trocoPara}
-                  onChange={(e) => setTrocoPara(formatarTroco(e.target.value))}
-                />
+              <div>
+                <h3>Precisa de troco?</h3>
+                <div className="deliveryOptions">
+                  {["Sim", "Não"].map((option) => (
+                    <label key={option} className="radioLabel">
+                      <input
+                        type="radio"
+                        name="precisaDeTroco"
+                        value={option}
+                        checked={precisaDeTroco === option}
+                        onChange={() => {
+                          setPrecisaDeTroco(option);
+                          if (option === "Não") setTrocoPara("00,00"); // Resetar o campo de troco se "Não" for selecionado
+                        }}
+                      />
+                      <span className="radioCircle"></span>
+                      {option}
+                    </label>
+                  ))}
+                </div>
+                {precisaDeTroco === "Sim" && (
+                  <div className="trocoPara">
+                    <label>Troco para quanto?</label>
+                    <input
+                      type="text"
+                      placeholder='Digite o valor do troco'
+                      value={trocoPara}
+                      onChange={(e) => setTrocoPara(formatarTroco(e.target.value))}
+                    />
+                  </div>
+                )}
               </div>
             )}
           </div>
