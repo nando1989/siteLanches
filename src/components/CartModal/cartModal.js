@@ -15,33 +15,24 @@ const CartModal = ({ onClose }) => {
   const [referencia, setReferencia] = useState("");
   const [tipoEntrega, setTipoEntrega] = useState("Entrega");
   const [consumirNoLocal, setConsumirNoLocal] = useState(null);
-  const [precisaDeTroco, setPrecisaDeTroco] = useState(null); // Novo estado para controlar se precisa de troco
+  const [precisaDeTroco, setPrecisaDeTroco] = useState(null);
   const [trocoPara, setTrocoPara] = useState("00,00");
 
   const [error, setError] = useState("");
 
-  // Função para formatar o valor do troco
   const formatarTroco = (valor) => {
-    // Remove tudo que não é número
     const apenasNumeros = valor.replace(/\D/g, "");
-
-    // Garante que o valor tenha pelo menos dois dígitos (para os centavos)
     const valorComZeros = apenasNumeros.padStart(2, "0");
-
-    // Separa a parte inteira dos centavos
     const parteInteira = valorComZeros.slice(0, -2) || "0";
     const centavos = valorComZeros.slice(-2);
-
-    // Remove zeros à esquerda da parte inteira, exceto se for zero
     const parteInteiraFormatada = parteInteira.replace(/^0+/, "") || "0";
-
-    // Junta a parte inteira e os centavos com a vírgula
     const valorFormatado = `${parteInteiraFormatada},${centavos}`;
-
     return valorFormatado;
   };
 
   const validarCampos = () => {
+    setError(""); // Resetar o erro antes de validar
+
     if (!nome) {
       setError("⚠️O nome é obrigatório!");
       return false;
@@ -57,12 +48,12 @@ const CartModal = ({ onClose }) => {
       return false;
     }
 
-    if (tipoEntrega === "Entrega" && (!endereco)) {
+    if (tipoEntrega === "Entrega" && !endereco) {
       setError("⚠️Endereço é obrigatório para entrega");
       return false;
     }
 
-    if (tipoEntrega === "Entrega" && (!referencia)) {
+    if (tipoEntrega === "Entrega" && !referencia) {
       setError("⚠️Referência é obrigatória para entrega");
       return false;
     }
@@ -77,14 +68,25 @@ const CartModal = ({ onClose }) => {
       return false;
     }
 
-    if (paymentMethod === "Dinheiro" && precisaDeTroco === "Sim" && !trocoPara) {
-      setError("⚠️Informe o troco para quanto.");
+    // Validação para "Precisa de troco?"
+    if (paymentMethod === "Dinheiro" && precisaDeTroco === null) {
+      setError("⚠️Selecione se precisa de troco.");
       return false;
     }
 
-    if (paymentMethod === "Dinheiro" && precisaDeTroco === "Sim" && !trocoPara) {
-      setError("⚠️Informe o troco para quanto.");
-      return false;
+    // Validação para o valor do troco
+    if (paymentMethod === "Dinheiro" && precisaDeTroco === "Sim") {
+      if (!trocoPara || trocoPara === "00,00") {
+        setError("⚠️Informe o troco para quanto.");
+        return false;
+      }
+
+      // Verifica se o valor do troco é maior que zero
+      const valorTroco = parseFloat(trocoPara.replace(",", "."));
+      if (isNaN(valorTroco) || valorTroco <= 0) {
+        setError("⚠️O valor do troco deve ser maior que zero.");
+        return false;
+      }
     }
 
     return true;
@@ -158,7 +160,6 @@ Obrigado pela preferência! 🎉
             <h3>Total: R$ {totalCarrinho.toFixed(2)}</h3>
           </div>
 
-          {/* Tipo de Entrega */}
           <div>
             <h2>Tipo de Entrega</h2>
             <div className="deliveryOptions">
@@ -171,7 +172,7 @@ Obrigado pela preferência! 🎉
                     checked={tipoEntrega === option}
                     onChange={() => {
                       setTipoEntrega(option);
-                      setConsumirNoLocal(null); // Resetar caso mude de opção
+                      setConsumirNoLocal(null);
                     }}
                   />
                   <span className="radioCircle"></span>
@@ -181,7 +182,6 @@ Obrigado pela preferência! 🎉
             </div>
           </div>
 
-          {/* Opção "Consumir no Local" apenas quando "Retirada" for selecionada */}
           {tipoEntrega === "Retirada" && (
             <div>
               <h2>Consumir no Local?</h2>
@@ -200,11 +200,6 @@ Obrigado pela preferência! 🎉
                   </label>
                 ))}
               </div>
-              {error && tipoEntrega === "Retirada" && !consumirNoLocal && (
-                <div className="container-error-message">
-                  <p className="error-message">{error}</p>
-                </div>
-              )}
             </div>
           )}
 
@@ -246,7 +241,6 @@ Obrigado pela preferência! 🎉
                 />
               </>
             )}
-
           </div>
 
           <div>
@@ -262,7 +256,7 @@ Obrigado pela preferência! 🎉
                     onChange={() => {
                       setPaymentMethod(method);
                       setCardBrand(null);
-                      setPrecisaDeTroco(null); // Resetar ao mudar o método de pagamento
+                      setPrecisaDeTroco(null);
                     }}
                   />
                   <span className="radioCircle"></span>
@@ -303,7 +297,7 @@ Obrigado pela preferência! 🎉
                         checked={precisaDeTroco === option}
                         onChange={() => {
                           setPrecisaDeTroco(option);
-                          if (option === "Não") setTrocoPara("00,00"); // Resetar o campo de troco se "Não" for selecionado
+                          if (option === "Não") setTrocoPara("00,00");
                         }}
                       />
                       <span className="radioCircle"></span>
@@ -325,6 +319,12 @@ Obrigado pela preferência! 🎉
               </div>
             )}
           </div>
+
+          {error && (
+            <div className="container-error-message">
+              <p className="error-message">{error}</p>
+            </div>
+          )}
 
           <div className='modal-button-buy'>
             <button className="button-finally" onClick={enviarWhatsApp}>
