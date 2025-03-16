@@ -3,14 +3,14 @@ import './style.css';
 import { useCart } from '../../context/CartContext';
 import { Modal } from '../Modal/modal';
 
-const Card = ({ title, description, price, imageUrl, itens, hasCheckbox, checkboxLabels, limiteMaximo, composição }) => {
+const Card = ({ title, description, price, imageUrl, itens, hasCheckbox, checkboxLabels, limiteMaximo, composição, observation }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const { addToCart } = useCart();  // Acessando a função para adicionar ao carrinho
-  const [selectedItem, setSelectedItem] = useState(null);  // Estado para armazenar o item selecionado
+  const { addToCart } = useCart(); 
+  const [selectedItem, setSelectedItem] = useState(null);  
   
 
   const handleClick = (item) => {
-    setSelectedItem(item);  // Armazenando o item selecionado no estado
+    setSelectedItem(item); 
     setIsOpen(true);  
   };
 
@@ -21,9 +21,9 @@ const Card = ({ title, description, price, imageUrl, itens, hasCheckbox, checkbo
         quantidade: quantidades[item]
       }));
   
-      // Passando para o carrinho
+     
       addToCart(itensSelecionados);
-      setIsOpen(false); // Fechando o modal após adicionar os itens ao carrinho
+      setIsOpen(false);
     }
   };
 
@@ -41,6 +41,7 @@ const Card = ({ title, description, price, imageUrl, itens, hasCheckbox, checkbo
             <div className="container-card-price">
               <p className="card-price">{price}</p>
               <button className="card-button">Pedir</button>
+              
             </div>
           </div>
        
@@ -57,7 +58,8 @@ const Card = ({ title, description, price, imageUrl, itens, hasCheckbox, checkbo
           hasCheckbox={hasCheckbox}
           checkboxLabels={checkboxLabels}
           limiteMaximo={limiteMaximo}
-          handleAddToCart={handleAddToCart}  // Passando a função de adicionar ao carrinho para o modal
+          handleAddToCart={handleAddToCart} 
+          observation={observation}
           
         />
       </div>

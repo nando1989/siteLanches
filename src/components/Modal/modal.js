@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './style.css';
 import { useCart } from '../../context/CartContext';
 
-export const Modal = ({ isOpen, onClose, titulo, composição, imageUrl, price, itens = [], hasCheckbox = false, checkboxLabels = {}, limiteMaximo = 30 }) => {
+export const Modal = ({ isOpen, onClose, titulo, composição, imageUrl, observation, price, itens = [], hasCheckbox = false, checkboxLabels = {}, limiteMaximo = 30 }) => {
   const [quantidades, setQuantidades] = useState({});
   const [checkedItems, setCheckedItems] = useState({});
   const [mostrarAviso, setMostrarAviso] = useState(false);
@@ -102,6 +102,7 @@ export const Modal = ({ isOpen, onClose, titulo, composição, imageUrl, price, 
             <h2>{titulo}</h2>
             <h3 className="vermelho">{price}</h3>
             <p>{composição}</p>
+            <textarea  className="area-observation" placeholder="Ex. tirar cebola, ovo, etc.">{observation}</textarea>
           </div>
 
           {itens.length > 0 ? (

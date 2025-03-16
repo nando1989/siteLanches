@@ -439,4 +439,20 @@
   resize: vertical; /* Permite redimensionar verticalmente */
 }
 
+.area-observation{
+  width: 250px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  border-radius: 10px;
+  border: 2px solid rgb(255, 174, 0);
+  cursor: pointer;
+  transition: 0.3s;
+  font-size: 12px;
+  margin-bottom: 15px;
+  margin-top: 10px;
+}
+
 }
