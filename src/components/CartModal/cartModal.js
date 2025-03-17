@@ -31,7 +31,7 @@ const CartModal = ({ onClose }) => {
   };
 
   const validarCampos = () => {
-    setError(""); // Resetar o erro antes de validar
+    setError(""); 
 
     if (!nome) {
       setError("⚠️O nome é obrigatório!");
@@ -99,7 +99,7 @@ const CartModal = ({ onClose }) => {
         if (item.observation) {
           itemText += `\n   _Observação: ${item.observation}_ 
           
-          `; // Adiciona a observação ao item
+          `; 
         }
         return itemText;
       })
@@ -109,6 +109,7 @@ const CartModal = ({ onClose }) => {
   📋 *Pedido Realizado* 📋
   
   🛒 *Itens do Carrinho:*
+  
   ${itensCarrinho}
   
   💰 *Total: R$ ${totalCarrinho.toFixed(2)}*
