@@ -19,10 +19,10 @@ const Home = () => {
   useEffect(() => {
     const updateImages = () => {
       if (window.innerWidth <= 768) {
-        // Imagens para mobile
+     
         setBannerImages(["/banner7.avif", "/banner8.avif", "/banner9.avif", "/banner10.avif"]);
       } else {
-        // Imagens para web
+       
         setBannerImages(["/banner1.avif", "/banner2.avif", "/banner3.avif"]);
       }
     };
@@ -35,7 +35,6 @@ const Home = () => {
     };
   }, []);
 
-  // Função para scroll suave
   const scrollToSection = (sectionId) => {
     const section = document.getElementById(sectionId);
     if (section) {
