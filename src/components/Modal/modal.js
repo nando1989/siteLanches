@@ -5,7 +5,7 @@ import { useCart } from '../../context/CartContext';
 export const Modal = ({ isOpen, onClose, titulo, composição, imageUrl, observation, price, itens = [], hasCheckbox = false, checkboxLabels = {}, limiteMaximo = 30 }) => {
   const [quantidades, setQuantidades] = useState({});
   const [mostrarAviso, setMostrarAviso] = useState(false);
-  const [localObservation, setLocalObservation] = useState(observation || ""); // Estado local para observation
+  const [localObservation, setLocalObservation] = useState(observation || "");
   const { addToCart } = useCart();
 
   useEffect(() => {
