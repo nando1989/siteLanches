@@ -8,12 +8,12 @@ export const Modal = ({ isOpen, onClose, titulo, composição, imageUrl, observa
   const [localObservation, setLocalObservation] = useState(observation || "");
   const { addToCart } = useCart();
 
-  useEffect(() => {
-    if (Array.isArray(itens) && itens.length > 0) {
-      const quantidadesIniciais = itens.reduce((acc, item) => ({ ...acc, [item]: 0 }), {});
-      setQuantidades(quantidadesIniciais);
-    }
-  }, [itens]);
+ useEffect(() => {
+  if (Array.isArray(itens) && itens.length > 0 && Object.keys(quantidades).length === 0) {
+    const quantidadesIniciais = itens.reduce((acc, item) => ({ ...acc, [item]: 0 }), {});
+    setQuantidades(quantidadesIniciais);
+  }
+}, [itens]);
 
   const totalSelecionado = Object.values(quantidades).reduce((acc, val) => acc + val, 0);
 
