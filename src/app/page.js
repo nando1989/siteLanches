@@ -19,10 +19,10 @@ const Home = () => {
   useEffect(() => {
     const updateImages = () => {
       if (window.innerWidth <= 768) {
-        // Imagens para mobile
+     
         setBannerImages(["/banner7.avif", "/banner8.avif", "/banner9.avif", "/banner10.avif"]);
       } else {
-        // Imagens para web
+       
         setBannerImages(["/banner1.avif", "/banner2.avif", "/banner3.avif"]);
       }
     };
@@ -35,7 +35,6 @@ const Home = () => {
     };
   }, []);
 
-  // Função para scroll suave
   const scrollToSection = (sectionId) => {
     const section = document.getElementById(sectionId);
     if (section) {
@@ -51,17 +50,17 @@ const Home = () => {
       const hora = agora.getHours();
       const minutos = agora.getMinutes();
 
-      const horaAtual = hora * 60 + minutos; // Converte para minutos totais
-      const horaAbertura = 11 * 60; // 11:00 em minutos
-      const horaFechamento = 24 * 60 + 30; // 22:30 em minutos
+      const horaAtual = hora * 60 + minutos; 
+      const horaAbertura = 11 * 60; 
+      const horaFechamento = 24 * 60 + 30; 
 
       setAberto(horaAtual >= horaAbertura && horaAtual <= horaFechamento);
     };
 
-    verificarHorario(); // Chama ao montar o componente
-    const intervalo = setInterval(verificarHorario, 60000); // Atualiza a cada minuto
+    verificarHorario(); 
+    const intervalo = setInterval(verificarHorario, 60000); 
 
-    return () => clearInterval(intervalo); // Limpa o intervalo ao desmontar
+    return () => clearInterval(intervalo); 
   }, []);
 
   return (
@@ -311,7 +310,7 @@ const Home = () => {
         <WhatsApp />
       </div>
 
-      {/* CartIcon como ícone flutuante */}
+     
       <CartIcon />
     </div>
   );
