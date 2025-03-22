@@ -64,7 +64,7 @@ const CartModal = ({ onClose }) => {
     }
 
     if (!paymentMethod) {
-      setError("Escolha uma forma de pagamento.");
+      setError("⚠️Escolha uma forma de pagamento.");
       return false;
     }
 
