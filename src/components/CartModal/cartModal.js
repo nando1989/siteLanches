@@ -64,7 +64,7 @@ const CartModal = ({ onClose }) => {
     }
 
     if (!paymentMethod) {
-      setError("Escolha uma forma de pagamento.");
+      setError("⚠️Escolha uma forma de pagamento.");
       return false;
     }
 
@@ -90,6 +90,26 @@ const CartModal = ({ onClose }) => {
     }
 
     return true;
+  };
+
+  const enviarParaBackend = async (pedido) => {
+    try {
+      const response = await fetch('https://seu-backend.com/api/pedidos', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(pedido),
+      });
+  
+      if (response.ok) {
+        console.log('Pedido enviado para o backend com sucesso!');
+      } else {
+        console.error('Erro ao enviar o pedido para o backend');
+      }
+    } catch (error) {
+      console.error('Erro de rede:', error);
+    }
   };
 
   const gerarMensagemWhatsApp = () => {
@@ -126,18 +146,20 @@ const CartModal = ({ onClose }) => {
   ${paymentMethod === "Crédito" ? `- Bandeira: ${cardBrand}` : ""}
   ${paymentMethod === "Dinheiro" && precisaDeTroco === "Sim" ? `- Troco para quanto: R$ ${trocoPara}` : ""}
   
-  Obrigado pela preferência! 🎉
+  Quero fazer meu pedido! 🎉
     `;
 
     return encodeURIComponent(mensagem);
   };
 
-  const enviarWhatsApp = () => {
+  const enviarWhatsApp = async () => {
     if (!validarCampos()) return;
 
     const mensagem = gerarMensagemWhatsApp();
     const url = `https://wa.me/5521977384132?text=${mensagem}`;
     window.open(url, "_blank");
+
+    await enviarParaBackend(itensText);
   };
 
   return (

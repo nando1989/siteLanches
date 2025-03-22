@@ -118,7 +118,7 @@ const Home = () => {
             <p>Whatsapp</p>
           </div>
           <div className="containerWellcome">
-            Seja bem vindo(a) ao nosso site. Fique a vontade e faça seu pedido abaixo
+            Seja bem vindo(a) ao nosso site. Fique a vontade e faça seu pedido abaixo.
           </div>
           <div className="containerButtonInput">
             <div className="containerButtonMenu">
@@ -194,7 +194,7 @@ const Home = () => {
           }}
         />
         <Card
-          title="Hot Dog Saradão"
+          title="Hot Dog Simples"
           description="Escolha seu hot dog"
           price="25,00"
           imageUrl="/hot1.png"
@@ -206,7 +206,7 @@ const Home = () => {
           }}
         />
         <Card
-          title="Hot Dog Saradão"
+          title="Hot Dog de linguiça"
           description="Escolha seu hot dog"
           price="25,00"
           imageUrl="/hot3.png"
@@ -226,9 +226,9 @@ const Home = () => {
           className="imghamburguer"
         />
         <Card
-          title="Hot Dog Saradão"
-          description="Escolha seus Salgadinhos"
-          price="25,00"
+          title="Caixa de petiscos"
+          description="Serve 5 até pessoas"
+          price="49,90"
           imageUrl="/pet1.png"
           composição="teste"
           itens={["Hot dog saradão"]}
@@ -239,8 +239,8 @@ const Home = () => {
         />
         <Card
           title="Isca de frango com anel de cebola"
-          description="Escolha seus Salgadinhos"
-          price="25,00"
+          description="Serve até 2 pessoas"
+          price="24,90"
           imageUrl="/pet2.png"
           composição="teste"
           itens={["Hot dog saradão"]}
@@ -251,8 +251,8 @@ const Home = () => {
         />
         <Card
           title="Batata frita com anel de cebola"
-          description="Escolha seus Salgadinhos"
-          price="25,00"
+          description="Serve até 2 pessoas"
+          price="24,90"
           imageUrl="/pet3.png"
           composição="teste"
           itens={["Hot dog saradão"]}
