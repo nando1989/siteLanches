@@ -12,17 +12,46 @@ import Footer from "../components/Footer/Footer";
 import WhatsApp from "@/components/whatsappButton/whatsappButton";
 import Card from "@/components/Cards/cards";
 import CartIcon from "@/components/CartIcon/cartIcon";
+import { database } from "../../firebaseConfig"; // Ajuste o caminho conforme necessário// Aponte para o arquivo onde você configurou o Firebase
+import { getDatabase, ref, get } from "firebase/database";
 
 const Home = () => {
   const [bannerImages, setBannerImages] = useState([]);
 
+  const [produtos, setProdutos] = useState([]);
+
+  // Função para buscar produtos do Firestore
+  const fetchProdutos = async () => {
+    try {
+      const produtosRef = ref(database, "products"); // Referência para o nó "products"
+      const snapshot = await get(produtosRef); // Busca os dados
+      if (snapshot.exists()) {
+        const produtosData = snapshot.val(); // Extrai os dados
+        const produtosList = Object.keys(produtosData).map(key => ({
+          id: key,
+          ...produtosData[key]
+        }));
+        setProdutos(produtosList);
+      } else {
+        console.log("Nenhum dado encontrado");
+      }
+    } catch (error) {
+      console.error("Erro ao buscar produtos:", error);
+    }
+  };
+
+
+  useEffect(() => {
+    fetchProdutos(); // Chama a função quando o componente monta
+  }, []);
+
   useEffect(() => {
     const updateImages = () => {
       if (window.innerWidth <= 768) {
-     
+
         setBannerImages(["/banner7.avif", "/banner8.avif", "/banner9.avif", "/banner10.avif"]);
       } else {
-       
+
         setBannerImages(["/banner1.avif", "/banner2.avif", "/banner3.avif"]);
       }
     };
@@ -50,17 +79,17 @@ const Home = () => {
       const hora = agora.getHours();
       const minutos = agora.getMinutes();
 
-      const horaAtual = hora * 60 + minutos; 
-      const horaAbertura = 11 * 60; 
-      const horaFechamento = 24 * 60 + 30; 
+      const horaAtual = hora * 60 + minutos;
+      const horaAbertura = 11 * 60;
+      const horaFechamento = 24 * 60 + 30;
 
       setAberto(horaAtual >= horaAbertura && horaAtual <= horaFechamento);
     };
 
-    verificarHorario(); 
-    const intervalo = setInterval(verificarHorario, 60000); 
+    verificarHorario();
+    const intervalo = setInterval(verificarHorario, 60000);
 
-    return () => clearInterval(intervalo); 
+    return () => clearInterval(intervalo);
   }, []);
 
   return (
@@ -142,15 +171,18 @@ const Home = () => {
           alt="Caminhão de frete"
           className="imghamburguer"
         />
-        <Card
-          title="Burgão Saradão"
-          description="Escolha seu hamburguer"
-          price="25,00"
-          imageUrl="/malibu6.png"
-          composição="Pão, Carne, Molho especial, alface, Tomate e Milho"
-          itens={["Burgão Saradão"]}
-          hasCheckbox={true}
-        />
+        {produtos.map(produto => (
+          <Card
+            key={produto.id}
+            title={produto.id} // Use o ID como título (ou adicione um campo "nome" no banco de dados)
+            description={produto.description}
+            price={produto.price}
+            imageUrl="/malibu9.png"
+            composição={produto.composition}
+            itens={["hamburguer"]}
+            hasCheckbox={true}
+          />
+        ))}
         <Card
           title="BanconBurguer"
           description="Escolha seu hamburguer"
@@ -158,7 +190,6 @@ const Home = () => {
           imageUrl="/malibu9.png"
           composição="Pão, Carne, Molho especial, alface, Tomate e Milho"
           itens={["BanconBurguer"]}
-          hasCheckbox={true}
         />
         <Card
           title="Chicken duplo"
@@ -310,7 +341,7 @@ const Home = () => {
         <WhatsApp />
       </div>
 
-     
+
       <CartIcon />
     </div>
   );

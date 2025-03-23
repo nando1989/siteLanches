@@ -1,17 +1,18 @@
-// firebaseConfig.js
 import { initializeApp } from "firebase/app";
-import { getFirestore } from "firebase/firestore";
+import { getDatabase } from "firebase/database"; // Importe o Realtime Database
 
 const firebaseConfig = {
-  apiKey: "SUA_API_KEY",
-  authDomain: "SEU_DOMINIO.firebaseapp.com",
-  projectId: "SEU_PROJECT_ID",
-  storageBucket: "SEU_STORAGE_BUCKET",
-  messagingSenderId: "SEU_MESSAGING_ID",
-  appId: "SEU_APP_ID",
+  apiKey: "AIzaSyAfmYjAHJ7pnA1Q40x_-UzbfWkI5d104JM",
+  authDomain: "site-mestre.firebaseapp.com",
+  databaseURL: "https://site-mestre-default-rtdb.firebaseio.com", // URL do Realtime Database
+  projectId: "site-mestre",
+  storageBucket: "site-mestre.appspot.com",
+  messagingSenderId: "956735080791",
+  appId: "1:956735080791:web:5812d3bde4773c82d25612",
+  measurementId: "G-HFMZQR75DZ"
 };
 
 const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+const database = getDatabase(app); // Inicialize o Realtime Database
 
-export { db };
+export { database };

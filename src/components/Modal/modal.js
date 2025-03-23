@@ -2,7 +2,10 @@ import React, { useState, useEffect } from 'react';
 import './style.css';
 import { useCart } from '../../context/CartContext';
 
-export const Modal = ({ isOpen, onClose, titulo, composição, imageUrl, observation, price, itens = [], hasCheckbox = false, checkboxLabels = {}, limiteMaximo = 30 }) => {
+export const Modal = ({ isOpen, onClose, titulo, composição, imageUrl, observation, formattedPrice, itens = [], hasCheckbox = false, checkboxLabels = {}, limiteMaximo = 30 }) => {
+  
+  
+  
   const [quantidades, setQuantidades] = useState({});
   const [mostrarAviso, setMostrarAviso] = useState(false);
   const [localObservation, setLocalObservation] = useState(observation || "");
@@ -56,7 +59,7 @@ export const Modal = ({ isOpen, onClose, titulo, composição, imageUrl, observa
     setMostrarAviso(false);
 
     const itensParaCarrinho = itensSelecionados.map(([item, quantidade]) => {
-      const precoNumerico = parseFloat(price);
+      const precoNumerico = parseFloat(formattedPrice );
       const quantidadeNumerica = parseInt(quantidade) || 0;
 
       return {
@@ -94,7 +97,7 @@ export const Modal = ({ isOpen, onClose, titulo, composição, imageUrl, observa
           )}
           <div className="modal-text">
             <h2>{titulo}</h2>
-            <h3 className="vermelho">{price}</h3>
+            <h3 className="vermelho">R$ {formattedPrice}</h3>
             <p>{composição}</p>
             <textarea
               className="area-observation"
@@ -140,7 +143,7 @@ export const Modal = ({ isOpen, onClose, titulo, composição, imageUrl, observa
 
         <div className='container-button-avançar'>
           <button className="modal-button" onClick={handleAddToCart}>
-            Adicionar ao carrinho ({price})
+            Adicionar ao carrinho ({formattedPrice})
           </button>
         </div>
       </div>

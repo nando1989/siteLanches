@@ -1,28 +1,38 @@
 import { db } from "../../firebaseConfig";
 import { collection, addDoc, getDocs, updateDoc, doc, deleteDoc } from "firebase/firestore";
 
-const pedidosRef = collection(db, "pedidos");
+const productsRef = collection(db, "products");
 
-// Criar um pedido
-export const criarPedido = async (pedido) => {
-  const novoPedido = await addDoc(pedidosRef, pedido);
-  return novoPedido.id;
-};
 
-// Buscar pedidos
-export const buscarPedidos = async () => {
-  const snapshot = await getDocs(pedidosRef);
+
+//buscar produtos
+export const searchProducts = async () => {
+  const snapshot = await getDocs(productsRef);
   return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 };
 
-// Atualizar pedido
-export const atualizarPedido = async (id, status) => {
-  const pedidoDoc = doc(db, "pedidos", id);
-  await updateDoc(pedidoDoc, { status });
+// Atualizar produtos
+export const updateProducts = async (id, status) => {
+  const productDoc = doc(db, "products", id);
+  await updateDoc(productDoc, { status });
 };
 
-// Deletar pedido
-export const deletarPedido = async (id) => {
-  const pedidoDoc = doc(db, "pedidos", id);
-  await deleteDoc(pedidoDoc);
+// Deletar produtos
+export const deletarProducts = async (id) => {
+  const productDoc = doc(db, "products", id);
+  await deleteDoc(productDoc);
+};
+
+export const buscarPedidos = async () => {
+  const querySnapshot = await getDocs(collection(db, "pedidos"));
+  return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+};
+
+export const atualizarPedido = async (id, novoStatus) => {
+  await updateDoc(doc(db, "pedidos", id), { status: novoStatus });
+};
+
+export const criarPedido = async (pedido) => {
+  const docRef = await addDoc(collection(db, "pedidos"), pedido);
+  return docRef.id;
 };

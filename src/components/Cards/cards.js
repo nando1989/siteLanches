@@ -4,14 +4,15 @@ import { useCart } from '../../context/CartContext';
 import { Modal } from '../Modal/modal';
 
 const Card = ({ title, description, price, imageUrl, itens, hasCheckbox, checkboxLabels, limiteMaximo, composição, observation }) => {
+  const formattedPrice = price ? parseFloat(price).toFixed(2) : "0.00";
   const [isOpen, setIsOpen] = useState(false);
-  const { addToCart } = useCart(); 
-  const [selectedItem, setSelectedItem] = useState(null);  
-  
+  const { addToCart } = useCart();
+  const [selectedItem, setSelectedItem] = useState(null);
+
 
   const handleClick = (item) => {
-    setSelectedItem(item); 
-    setIsOpen(true);  
+    setSelectedItem(item);
+    setIsOpen(true);
   };
 
   const handleAddToCart = () => {
@@ -20,8 +21,8 @@ const Card = ({ title, description, price, imageUrl, itens, hasCheckbox, checkbo
         item,
         quantidade: quantidades[item]
       }));
-  
-     
+
+
       addToCart(itensSelecionados);
       setIsOpen(false);
     }
@@ -30,25 +31,25 @@ const Card = ({ title, description, price, imageUrl, itens, hasCheckbox, checkbo
   return (
     <>
       <div onClick={() => handleClick({ title, description, price, imageUrl, itens, hasCheckbox, checkboxLabels, limiteMaximo, composição })} className="card">
-        
-          <div className="card-image">
-            <img src={imageUrl} alt={title} className="card-image" />
+
+        <div className="card-image">
+          <img src={imageUrl} alt={title} className="card-image" />
+        </div>
+        <div className="card-content">
+          <h2 className="card-title">{title}</h2>
+          <p className="card-description">{description}</p>
+
+          <div className="container-card-price">
+            <p>Preço: R$ {formattedPrice}</p> 
+            <button className="card-button">Pedir</button>
+
           </div>
-          <div className="card-content">
-            <h2 className="card-title">{title}</h2>
-            <p className="card-description">{description}</p>
-            
-            <div className="container-card-price">
-              <p className="card-price">{price}</p>
-              <button className="card-button">Pedir</button>
-              
-            </div>
-          </div>
-       
+        </div>
+
 
         <Modal
           isOpen={isOpen}
-          price={price}
+          formattedPrice={formattedPrice} 
           onClose={() => setIsOpen(false)}
           imageUrl={imageUrl}
           composição={composição}
@@ -58,9 +59,9 @@ const Card = ({ title, description, price, imageUrl, itens, hasCheckbox, checkbo
           hasCheckbox={hasCheckbox}
           checkboxLabels={checkboxLabels}
           limiteMaximo={limiteMaximo}
-          handleAddToCart={handleAddToCart} 
+          handleAddToCart={handleAddToCart}
           observation={observation}
-          
+
         />
       </div>
     </>

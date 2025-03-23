@@ -2,9 +2,12 @@ import { useState } from "react";
 import { useCart } from '../../context/CartContext';
 import './style.css';
 import { FiX, FiTrash2 } from "react-icons/fi";
+import { collection, addDoc } from "firebase/firestore";
+import { database } from "../../../firebaseConfig"; // Importe o db do Firestore
+import { ref, push } from "firebase/database"
 
 const CartModal = ({ onClose }) => {
-  const { cart, removeFromCart } = useCart();
+  const { cart, removeFromCart, setCart } = useCart();
   const totalCarrinho = cart.reduce((acc, item) => acc + (item.total || 0), 0);
 
   const [paymentMethod, setPaymentMethod] = useState(null);
@@ -31,7 +34,7 @@ const CartModal = ({ onClose }) => {
   };
 
   const validarCampos = () => {
-    setError(""); 
+    setError("");
 
     if (!nome) {
       setError("⚠️O nome é obrigatório!");
@@ -68,20 +71,17 @@ const CartModal = ({ onClose }) => {
       return false;
     }
 
-    // Validação para "Precisa de troco?"
     if (paymentMethod === "Dinheiro" && precisaDeTroco === null) {
       setError("⚠️Selecione se precisa de troco.");
       return false;
     }
 
-    // Validação para o valor do troco
     if (paymentMethod === "Dinheiro" && precisaDeTroco === "Sim") {
       if (!trocoPara || trocoPara === "00,00") {
         setError("⚠️Informe o troco para quanto.");
         return false;
       }
 
-      // Verifica se o valor do troco é maior que zero
       const valorTroco = parseFloat(trocoPara.replace(",", "."));
       if (isNaN(valorTroco) || valorTroco <= 0) {
         setError("⚠️O valor do troco deve ser maior que zero.");
@@ -92,23 +92,13 @@ const CartModal = ({ onClose }) => {
     return true;
   };
 
-  const enviarParaBackend = async (pedido) => {
+  const enviarParaRealtimeDatabase = async (pedido) => {
     try {
-      const response = await fetch('https://seu-backend.com/api/pedidos', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(pedido),
-      });
-  
-      if (response.ok) {
-        console.log('Pedido enviado para o backend com sucesso!');
-      } else {
-        console.error('Erro ao enviar o pedido para o backend');
-      }
+      const pedidosRef = ref(database, "pedidos"); // Referência para o nó "pedidos"
+      await push(pedidosRef, pedido); // Adiciona o pedido ao Realtime Database
+      console.log("Pedido enviado para o Realtime Database com sucesso!");
     } catch (error) {
-      console.error('Erro de rede:', error);
+      console.error("Erro ao enviar pedido para o Realtime Database:", error);
     }
   };
 
@@ -119,7 +109,7 @@ const CartModal = ({ onClose }) => {
         if (item.observation) {
           itemText += `\n   _Observação: ${item.observation}_ 
           
-          `; 
+          `;
         }
         return itemText;
       })
@@ -152,16 +142,52 @@ const CartModal = ({ onClose }) => {
     return encodeURIComponent(mensagem);
   };
 
-  const enviarWhatsApp = async () => {
-    if (!validarCampos()) return;
+  const finalizarPedido = async () => {
+  if (!validarCampos()) return;
 
+  const pedido = {
+    nome,
+    telefone,
+    endereco: tipoEntrega === "Entrega" ? endereco : null,
+    referencia: tipoEntrega === "Entrega" ? referencia : null,
+    tipoEntrega,
+    consumirNoLocal: tipoEntrega === "Retirada" ? consumirNoLocal : null,
+    paymentMethod,
+    cardBrand: paymentMethod === "Crédito" ? cardBrand : null,
+    precisaDeTroco: paymentMethod === "Dinheiro" ? precisaDeTroco : null,
+    trocoPara: paymentMethod === "Dinheiro" && precisaDeTroco === "Sim" ? trocoPara : null,
+    itens: cart.map((item) => ({
+      name: item.name,
+      quantity: item.quantity,
+      total: item.total,
+      observation: item.observation || null,
+    })),
+    total: totalCarrinho,
+    data: new Date().toISOString(),
+  };
+
+    // Envia o pedido para o Firestore
+    await enviarParaRealtimeDatabase(pedido);
+
+    // Envia o pedido para o WhatsApp
     const mensagem = gerarMensagemWhatsApp();
     const url = `https://wa.me/5521977384132?text=${mensagem}`;
     window.open(url, "_blank");
 
-    await enviarParaBackend(itensText);
-  };
+    // Limpa o carrinho e os campos do formulário
 
+    
+  setNome("");
+  setTelefone("");
+  setEndereco("");
+  setReferencia("");
+  setTipoEntrega("Entrega");
+  setConsumirNoLocal(null);
+  setPaymentMethod(null);
+  setCardBrand(null);
+  setPrecisaDeTroco(null);
+  setTrocoPara("00,00");
+};
   return (
     <div className="modal-backdrop">
       <div className="modal-cart">
@@ -172,25 +198,25 @@ const CartModal = ({ onClose }) => {
               <FiX size={20} />
             </button>
           </div>
-          
+
           <div className="modal-itens-observation">
-          {cart.length === 0 ? (
-            <p>Seu carrinho está vazio.</p>
-          ) : (
-            <ul>
-              {cart.map((item, index) => (
-                <li key={index}>
-                  <div className="modal-observation-item-column">
-                  {item.name} - {item.quantity}x - R$ {item.total.toFixed(2)}
-                  {item.observation && <p>Observação: {item.observation}</p>}
-                  </div>
-                  <button className="button-remove" onClick={() => removeFromCart(index)}>
-                    <FiTrash2 size={16} />
-                  </button>
-                </li>
-              ))}
-            </ul>
-          )}
+            {cart.length === 0 ? (
+              <p>Seu carrinho está vazio.</p>
+            ) : (
+              <ul>
+                {cart.map((item, index) => (
+                  <li key={index}>
+                    <div className="modal-observation-item-column">
+                      {item.name} - {item.quantity}x - R$ {item.total.toFixed(2)}
+                      {item.observation && <p>Observação: ${item.observation}</p>}
+                    </div>
+                    <button className="button-remove" onClick={() => removeFromCart(index)}>
+                      <FiTrash2 size={16} />
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
 
           <div className='modal-total'>
@@ -364,7 +390,7 @@ const CartModal = ({ onClose }) => {
           )}
 
           <div className='modal-button-buy'>
-            <button className="button-finally" onClick={enviarWhatsApp}>
+            <button className="button-finally" onClick={finalizarPedido}>
               Finalizar compra
             </button>
           </div>

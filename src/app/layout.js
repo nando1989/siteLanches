@@ -1,5 +1,4 @@
-// src/app/layout.js
-import CartIcon from '@/components/CartIcon/cartIcon';
+
 import { CartProvider } from '../../src/context/CartContext'; // Importe o CartProvider
 import './globals.css';
 
@@ -15,7 +14,7 @@ export default function RootLayout({ children }) {
         {/* Envolva o children com o CartProvider */}
         <CartProvider>
           <main>{children}</main>
-          <CartIcon/>
+         
         </CartProvider>
       </body>
     </html>
