@@ -4,8 +4,10 @@ import './style.css';
 export default function Home() {
   return (
     <div className="dashBoard">
-      <h1>Kanban de Pedidos</h1>
+      <div className="card-kanban">
+      <h1>pedidos</h1>
       <KanbanBoard />
+      </div>
     </div>
   );
 }

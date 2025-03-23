@@ -1,5 +1,7 @@
 /* Container principal do Kanban Board */
 .kanban-board {
+  width: 90%;
+  max-width: 1200px;
   height: auto;
   display: flex;
   gap: 20px;
@@ -16,13 +18,13 @@
   gap: 20px;
   padding: 20px;
   overflow-x: auto;
-  background-color: #f5f5f5;
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
 /* Estilo para as colunas */
 .kanban-column {
+  height: auto;
   display: flex;
   flex-direction: column;
   gap: 15px;
@@ -45,25 +47,21 @@
 
 /* Botão de buscar pedidos */
 .btn-buscar {
-  background-color: #007BFF;
-  color: white;
   border: none;
   padding: 8px 12px;
-  border-radius: 4px;
+  border-radius: 10px;
   cursor: pointer;
   font-size: 14px;
   margin-bottom: 20px;
   display: block;
   margin-left: auto;
   margin-right: auto;
-  height: 200px;
-  width: 200px;
-  border-radius: 100%;
-  font-size: 120px;
-}
-
-.btn-buscar:hover {
-  background-color: #0056b3;
+  height: 70px;
+  width: 70px;
+  font-size: 50px;
+  justify-content: center;
+  align-items: center;
+  display: flex;
 }
 
 /* Estilo dos cartões de pedidos */
@@ -75,6 +73,7 @@
   margin: 5px 0;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   cursor: grab;
+  height: auto;
 }
 
 /* Estilo de hover nos cartões */
@@ -85,6 +84,7 @@
 /* Estilo da área onde os cartões são arrastados */
 .kanban-column {
   transition: background-color 0.3s ease;
+  height: auto;
 }
 
 .kanban-column:active {
@@ -95,10 +95,38 @@
   margin: 5px 0;
   font-size: 14px;
   color: #333;
+  height: auto;
 }
 
 /* Estilo para quando o pedido for arrastado */
 .pedido-card:active {
   transform: scale(1.05);
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.pedido-card {
+  cursor: grab;
+  transition: transform 0.2s ease;
+}
+
+.pedido-card:active {
+  cursor: grabbing;
+}
+
+/* Estilo da coluna quando um card está sendo arrastado sobre ela */
+.kanban-column.drag-over {
+  background-color: #e0f7fa; /* Cor de fundo ao arrastar */
+}
+
+.pedido-card ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.pedido-card li {
+  margin-bottom: 8px;
+  padding: 8px;
+  background-color: #f9f9f9;
+  border-radius: 4px;
 }

@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { DndContext, useDraggable, useDroppable } from "@dnd-kit/core";
 import { database } from "../../../firebaseConfig";
-import { ref, onValue } from "firebase/database";
+import { ref, onValue, update } from "firebase/database";
 import "./style.css";
 
 const KanbanBoard = () => {
@@ -31,12 +31,34 @@ const KanbanBoard = () => {
     buscarPedidos();
   }, []);
 
+  // Função para atualizar o status do pedido ao soltar (memorizada com useCallback)
+  const handleDragEnd = useCallback((event) => {
+    const { active, over } = event;
+
+    if (active && over && active.id !== over.id) {
+      const pedidoId = active.id;
+      const novoStatus = over.id;
+
+      // Atualiza o status no Firebase
+      const pedidoRef = ref(database, `pedidos/${pedidoId}`);
+      update(pedidoRef, { status: novoStatus });
+
+      // Atualiza o estado local
+      setPedidos((prevPedidos) =>
+        prevPedidos.map((pedido) =>
+          pedido.id === pedidoId ? { ...pedido, status: novoStatus } : pedido
+        )
+      );
+    }
+  }, []); // Array de dependências vazio para garantir que a função não seja recriada
+
   return (
-    <DndContext><button onClick={buscarPedidos} className="btn-buscar">🔄 </button>
+    <DndContext onDragEnd={handleDragEnd}>
+      <button onClick={buscarPedidos} className="btn-buscar">
+        🔄
+      </button>
       <div className="kanban-board">
-        
-        
-        {["Novo", "Preparando", "Pronto"].map((status) => (
+        {["Novo", "Preparando", "Pronto", "Na Rua"].map((status) => (
           <Column key={status} status={status} pedidos={pedidos} />
         ))}
       </div>
@@ -73,16 +95,40 @@ const Card = ({ pedido }) => {
       {...attributes}
       className="pedido-card"
       style={{
-        transform: transform ? `translate(${transform.x}px, ${transform.y}px)` : "",
+        transform: transform
+          ? `translate(${transform.x}px, ${transform.y}px)`
+          : "",
       }}
     >
-    
-      <p><strong>Nome:</strong> {pedido.nome}</p>
-      <p><strong>Telefone:</strong> {pedido.telefone}</p>
-      <p><strong>Pagamento:</strong> {pedido.paymentMethod}</p>
-      <p><strong>Entrega:</strong> {pedido.tipoEntrega}</p>
-      <p><strong>Total:</strong> R$ {pedido.total.toFixed(2)}</p>
-      <p><strong>Itens:</strong> {pedido.itens.length} produto(s)</p>
+      <p>
+        <strong>Nome:</strong> {pedido.nome || "N/A"}
+      </p>
+      <p>
+        <strong>Telefone:</strong> {pedido.telefone || "N/A"}
+      </p>
+      <p>
+        <strong>Pagamento:</strong> {pedido.paymentMethod || "N/A"}
+      </p>
+      <p>
+        <strong>Entrega:</strong> {pedido.tipoEntrega || "N/A"}
+      </p>
+      <p>
+        <strong>Total:</strong> R$ {pedido.total ? pedido.total.toFixed(2) : "0.00"}
+      </p>
+      <p>
+        <strong>Itens:</strong>
+      </p>
+      <ul>
+        {pedido.itens && pedido.itens.length > 0 ? (
+          pedido.itens.map((item, index) => (
+            <li key={index}>
+              {item.name} - Quantidade: {item.quantity} - Total: R$ {item.total.toFixed(2)}
+            </li>
+          ))
+        ) : (
+          <li>Nenhum item encontrado.</li>
+        )}
+      </ul>
     </div>
   );
 };
