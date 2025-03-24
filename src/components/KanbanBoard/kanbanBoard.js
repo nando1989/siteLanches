@@ -122,11 +122,9 @@ const Card = ({ pedido }) => {
         {pedido.itens && pedido.itens.length > 0 ? (
           pedido.itens.map((item, index) => (
             <li key={index}>
-              {item.name} - Quantidade: {item.quantity}  - Total: R$ {item.total.toFixed(2)}
+              {item.name} - Quantidade: {item.quantity} - Observação: {item.observation} - Total: R$ {item.total.toFixed(2)}
             </li>
-            <li key={index}>
-               Observação: {item.observation}
-            </li>
+          
           ))
         ) : (
           <li>Nenhum item encontrado.</li>
