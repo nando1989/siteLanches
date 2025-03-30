@@ -5,7 +5,7 @@ import { DndContext, useDraggable, useDroppable } from "@dnd-kit/core";
 import { database } from "../../../firebaseConfig";
 import { ref, onValue, update } from "firebase/database";
 import "./style.css";
-
+import MenuLateral from "../MenuLateral/menuLateral";
 const KanbanBoard = () => {
   const [pedidos, setPedidos] = useState([]);
 
@@ -31,7 +31,7 @@ const KanbanBoard = () => {
     buscarPedidos();
   }, []);
 
-  // Função para atualizar o status do pedido ao soltar (memorizada com useCallback)
+  // Função para atualizar o status do pedido ao soltar
   const handleDragEnd = useCallback((event) => {
     const { active, over } = event;
 
@@ -50,22 +50,27 @@ const KanbanBoard = () => {
         )
       );
     }
-  }, []); // Array de dependências vazio para garantir que a função não seja recriada
+  }, []);
 
   return (
-    <DndContext onDragEnd={handleDragEnd}>
-      <button onClick={buscarPedidos} className="btn-buscar">
-        🔄
-      </button>
-      <div className="kanban-board">
-        {["Novo", "Preparando", "Pronto", "Na Rua"].map((status) => (
-          <Column key={status} status={status} pedidos={pedidos} />
-        ))}
+    <div className="app-container">
+
+     
+
+      <div className="conteudo-principal">
+        <DndContext onDragEnd={handleDragEnd}>
+          <div className="kanban-board">
+            {["Novo", "Preparando", "Pronto", "Na Rua"].map((status) => (
+              <Column key={status} status={status} pedidos={pedidos} />
+            ))}
+          </div>
+        </DndContext>
       </div>
-    </DndContext>
+    </div>
   );
 };
 
+// Os componentes Column e Card permanecem iguais
 const Column = ({ status, pedidos }) => {
   const { setNodeRef } = useDroppable({ id: status });
 
@@ -83,12 +88,29 @@ const Column = ({ status, pedidos }) => {
   );
 };
 
+const handleExcluirPedido = async () => {
+  try {
+    if (window.confirm(`Tem certeza que deseja excluir o pedido de ${pedido.nome}?`)) {
+      const pedidoRef = ref(database, `pedidos/${pedido.id}`);
+      await remove(pedidoRef);
+
+      // Chama a função de callback para notificar o componente pai
+      if (onDelete) onDelete(pedido.id);
+    }
+  } catch (error) {
+    console.error("Erro ao excluir pedido:", error);
+    alert("Ocorreu um erro ao excluir o pedido");
+  }
+};
+
 const Card = ({ pedido }) => {
   const { attributes, listeners, setNodeRef, transform } = useDraggable({
     id: pedido.id,
   });
 
   return (
+
+    <>
     <div
       ref={setNodeRef}
       {...listeners}
@@ -100,37 +122,32 @@ const Card = ({ pedido }) => {
           : "",
       }}
     >
-      <p>
-        <strong>Nome:</strong> {pedido.nome || "N/A"}
-      </p>
-      <p>
-        <strong>Telefone:</strong> {pedido.telefone || "N/A"}
-      </p>
-      <p>
-        <strong>Pagamento:</strong> {pedido.paymentMethod || "N/A"}
-      </p>
-      <p>
-        <strong>Entrega:</strong> {pedido.tipoEntrega || "N/A"}
-      </p>
-      <p>
-        <strong>Total:</strong> R$ {pedido.total ? pedido.total.toFixed(2) : "0.00"}
-      </p>
-      <p>
-        <strong>Itens:</strong>
-      </p>
+      <button 
+        className="btn-excluir"
+        onClick={handleExcluirPedido}
+        title="Excluir pedido"
+      >
+        ×
+      </button>
+
+      <p><strong>Nome:</strong> {pedido.nome || "N/A"}</p>
+      <p><strong>Telefone:</strong> {pedido.telefone || "N/A"}</p>
+      <p><strong>Pagamento:</strong> {pedido.paymentMethod || "N/A"}</p>
+      <p><strong>Entrega:</strong> {pedido.tipoEntrega || "N/A"}</p>
+      <p><strong>Total:</strong> R$ {pedido.total ? pedido.total.toFixed(2) : "0.00"}</p>
+      <p><strong>Itens:</strong></p>
       <ul>
         {pedido.itens && pedido.itens.length > 0 ? (
           pedido.itens.map((item, index) => (
             <li key={index}>
               {item.name} - Quantidade: {item.quantity} - Observação: {item.observation} - Total: R$ {item.total.toFixed(2)}
             </li>
-          
           ))
         ) : (
           <li>Nenhum item encontrado.</li>
         )}
       </ul>
-    </div>
+    </div></>
   );
 };
 

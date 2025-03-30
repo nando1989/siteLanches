@@ -1,0 +1,68 @@
+.container-produtos{
+  min-height: 100vh;
+  height: auto;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  height:auto;
+  margin-bottom: 10px;
+  align-items: start;
+  justify-content: start;
+  background-color: rgb(223, 238, 241);
+}
+
+.card-produtos{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: auto;
+  width: 100%;
+  flex-direction: column;
+}
+
+.tabela-produtos{
+  width: 100%;
+}
+
+.tabela-produtos th, .tabela-produtos td {
+  background-color: white;
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+.tabela-produtos tr:hover {
+  background-color: #969393;
+  cursor: pointer;
+}
+
+/* Modal */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  min-width: 300px;
+}
+
+.modal-actions {
+  margin-top: 10px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.modal-actions button {
+  padding: 8px 12px;
+  cursor: pointer;
+}
