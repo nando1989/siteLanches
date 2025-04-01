@@ -3,7 +3,7 @@ import './style.css';
 import { useCart } from '../../context/CartContext';
 import { Modal } from '../Modal/modal';
 
-const Card = ({ title, description, price, imageUrl, itens, hasCheckbox, checkboxLabels, limiteMaximo, composição, observation }) => {
+const Card = ({ title, description, price, imageUrl, itens, id,  hasCheckbox, checkboxLabels, limiteMaximo, composition, observation }) => {
   const formattedPrice = price ? parseFloat(price).toFixed(2) : "0.00";
   const [isOpen, setIsOpen] = useState(false);
   const { addToCart } = useCart();
@@ -30,7 +30,7 @@ const Card = ({ title, description, price, imageUrl, itens, hasCheckbox, checkbo
 
   return (
     <>
-      <div onClick={() => handleClick({ title, description, price, imageUrl, itens, hasCheckbox, checkboxLabels, limiteMaximo, composição })} className="card">
+      <div onClick={() => handleClick({ title, description, price, imageUrl, itens, hasCheckbox, checkboxLabels, limiteMaximo, composition })} className="card">
 
         <div className="card-image">
           <img src={imageUrl} alt={title} className="card-image" />
@@ -48,11 +48,12 @@ const Card = ({ title, description, price, imageUrl, itens, hasCheckbox, checkbo
 
 
         <Modal
+          id={id}
           isOpen={isOpen}
           formattedPrice={formattedPrice} 
           onClose={() => setIsOpen(false)}
           imageUrl={imageUrl}
-          composição={composição}
+          composition={composition}
           titulo={title}
           description={description}
           itens={itens || []}

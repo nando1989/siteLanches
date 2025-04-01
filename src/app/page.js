@@ -173,8 +173,9 @@ const Home = () => {
         />
         {produtos.map(produto => (
           <Card
+            
             key={produto.id}
-            title={produto.id} // Use o ID como título (ou adicione um campo "nome" no banco de dados)
+            title={produto.name} // Use o ID como título (ou adicione um campo "nome" no banco de dados)
             description={produto.description}
             price={produto.price}
             imageUrl="/malibu9.png"
