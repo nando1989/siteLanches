@@ -1,5 +1,5 @@
 import KanbanBoard from "@/components/KanbanBoard/kanbanBoard";
-import './style.css';
+
 
 export default function Home() {
   return (
