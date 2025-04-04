@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import "./style.css";
 import MenuLateral from "@/components/MenuLateral/menuLateral";
-import { getDatabase, ref, onValue, set, get } from "firebase/database";
+import { getDatabase, ref, onValue, set, get, remove } from "firebase/database";
 import { database } from "../../../../firebaseConfig";
 
 export default function Home() {
@@ -16,50 +16,62 @@ export default function Home() {
     name: "",
     description: "",
     price: "",
-    composition: ""
+    composition: "",
+    section: "section1" // Novo campo para selecionar a seção
   });
 
   // Carrega os produtos do Firebase
   useEffect(() => {
-    const produtosRef = ref(database, "products");
-    const unsubscribe = onValue(produtosRef, (snapshot) => {
-      const data = snapshot.val();
-      if (data) {
-        const produtosArray = Object.keys(data).map(key => ({
-          id: key,
-          ...data[key]
-        })).sort((a, b) => parseInt(a.id) - parseInt(b.id));
-        setProdutos(produtosArray);
+    const loadProducts = async () => {
+      try {
+        // Carrega produtos de todas as seções
+        const sections = ['section1', 'section2', 'section3'];
+        let allProducts = [];
+
+        for (const section of sections) {
+          const sectionRef = ref(database, section);
+          const snapshot = await get(sectionRef);
+
+          if (snapshot.exists()) {
+            const sectionProducts = Object.keys(snapshot.val()).map(key => ({
+              id: key,
+              section: section, // Adiciona a seção de origem
+              ...snapshot.val()[key]
+            }));
+            allProducts = [...allProducts, ...sectionProducts];
+          }
+        }
+
+        setProdutos(allProducts.sort((a, b) => parseInt(a.id) - parseInt(b.id)));
+      } catch (error) {
+        console.error("Erro ao carregar produtos:", error);
       }
-    });
-    return () => unsubscribe();
+    };
+
+    loadProducts();
   }, []);
 
-  // Função para gerar o próximo ID sequencial
-  const getNextId = async () => {
+  // Função para gerar o próximo ID sequencial para uma seção
+  const getNextId = async (section) => {
     try {
-      const snapshot = await get(ref(database, 'products'));
-      
-      // Se não existir produtos, começa com 01
+      const snapshot = await get(ref(database, section));
+
       if (!snapshot.exists()) return "01";
-      
+
       const produtosData = snapshot.val();
       const ids = Object.keys(produtosData)
         .map(id => parseInt(id))
         .filter(id => !isNaN(id));
-      
-      // Se não houver IDs numéricos válidos, começa com 01
+
       if (ids.length === 0) return "01";
-      
-      // Encontra o maior ID e incrementa
+
       const maxId = Math.max(...ids);
       const nextId = maxId + 1;
-      
-      // Formata com 2 dígitos
+
       return nextId.toString().padStart(2, '0');
     } catch (error) {
       console.error("Erro ao buscar próximo ID:", error);
-      return "01"; // Fallback seguro
+      return "01";
     }
   };
 
@@ -81,7 +93,8 @@ export default function Home() {
       name: "",
       description: "",
       price: "",
-      composition: ""
+      composition: "",
+      section: "section1"
     });
   };
 
@@ -93,10 +106,27 @@ export default function Home() {
 
   const handleNovoProdutoChange = (e) => {
     const { name, value } = e.target;
-    setNovoProduto(prev => ({ 
-      ...prev, 
-      [name]: name === "price" ? value : value 
+    setNovoProduto(prev => ({
+      ...prev,
+      [name]: name === "price" ? value : value
     }));
+  };
+
+  // Excluir produto
+  const excluirProduto = async () => {
+    if (!produtoSelecionado || !window.confirm("Tem certeza que deseja excluir este produto?")) {
+      return;
+    }
+
+    try {
+      await remove(ref(database, `${produtoSelecionado.section}/${produtoSelecionado.id}`));
+      fecharModal();
+      // Atualiza a lista de produtos após exclusão
+      setProdutos(produtos.filter(p => p.id !== produtoSelecionado.id));
+    } catch (error) {
+      console.error("Erro ao excluir produto:", error);
+      alert("Erro ao excluir produto");
+    }
   };
 
   // Salvar edição de produto existente
@@ -107,7 +137,7 @@ export default function Home() {
     }
 
     try {
-      await set(ref(database, `products/${produtoSelecionado.id}`), {
+      await set(ref(database, `${produtoSelecionado.section}/${produtoSelecionado.id}`), {
         name: produtoSelecionado.name,
         description: produtoSelecionado.description,
         price: parseFloat(produtoSelecionado.price),
@@ -128,10 +158,9 @@ export default function Home() {
     }
 
     try {
-      const novoId = await getNextId();
-      console.log("Novo ID gerado:", novoId);
-      
-      await set(ref(database, `products/${novoId}`), {
+      const novoId = await getNextId(novoProduto.section);
+
+      await set(ref(database, `${novoProduto.section}/${novoId}`), {
         name: novoProduto.name,
         description: novoProduto.description,
         price: parseFloat(novoProduto.price),
@@ -151,17 +180,22 @@ export default function Home() {
       <MenuLateral />
       <div className="card-produtos">
         <div className="header-tabela">
-          <h2>Lista de Produtos</h2>
-          <button className="btn-adicionar" onClick={abrirModalNovoProduto}>
+          <div className="container-title-produtos">
+            <h2>Lista de Produtos</h2>
+          </div>
+          <div className="container-btn-adicionar-produtos">
+            <button className="btn-adicionar-produtos" onClick={abrirModalNovoProduto}>
             Adicionar Produto
           </button>
+          </div>
         </div>
-        
+
         {/* Tabela de produtos */}
         <table className="tabela-produtos">
           <thead>
             <tr>
               <th>Código</th>
+              <th>Seção</th>
               <th>Nome</th>
               <th>Descrição</th>
               <th>Preço</th>
@@ -169,8 +203,9 @@ export default function Home() {
           </thead>
           <tbody>
             {produtos.map((produto) => (
-              <tr key={produto.id} onClick={() => abrirModal(produto)}>
+              <tr key={`${produto.section}-${produto.id}`} onClick={() => abrirModal(produto)}>
                 <td>{produto.id}</td>
+                <td>{produto.section}</td>
                 <td>{produto.name}</td>
                 <td>{produto.description}</td>
                 <td>R$ {produto.price ? produto.price.toFixed(2) : "0.00"}</td>
@@ -185,7 +220,20 @@ export default function Home() {
             <div className="modal-content">
               <h3>Editar Produto</h3>
               <label>
-                Nome: *
+                Seção:
+                <select
+                  name="section"
+                  value={produtoSelecionado.section}
+                  onChange={handleChange}
+                  disabled // Não permitir mudar a seção de um produto existente
+                >
+                  <option value="section1">Sanduiches</option>
+                  <option value="section2">HotDog</option>
+                  <option value="section3">Bebidas</option>
+                </select>
+              </label>
+              <label>
+                Nome:
                 <input
                   type="text"
                   name="name"
@@ -195,7 +243,7 @@ export default function Home() {
                 />
               </label>
               <label>
-                Descrição: *
+                Descrição:
                 <input
                   type="text"
                   name="description"
@@ -205,7 +253,7 @@ export default function Home() {
                 />
               </label>
               <label>
-                Preço: *
+                Preço:
                 <input
                   type="number"
                   name="price"
@@ -226,8 +274,11 @@ export default function Home() {
                 />
               </label>
               <div className="modal-actions">
-                <button onClick={salvarEdicao}>Salvar</button>
-                <button onClick={fecharModal}>Cancelar</button>
+                <button className="btn-excluir" onClick={excluirProduto}>
+                  Excluir
+                </button>
+                <button className="btn-salvar" onClick={salvarEdicao}>Salvar</button>
+                <button className="btn-cancelar" onClick={fecharModal}>Cancelar</button>
               </div>
             </div>
           </div>
@@ -239,7 +290,20 @@ export default function Home() {
             <div className="modal-content">
               <h3>Adicionar Novo Produto</h3>
               <label>
-                Nome: *
+                Seção:
+                <select
+                  name="section"
+                  value={novoProduto.section}
+                  onChange={handleNovoProdutoChange}
+                  required
+                >
+                  <option value="section1">Sanduiches</option>
+                  <option value="section2">HotDog</option>
+                  <option value="section3">Bebidas</option>
+                </select>
+              </label>
+              <label>
+                Nome:
                 <input
                   type="text"
                   name="name"
@@ -249,7 +313,7 @@ export default function Home() {
                 />
               </label>
               <label>
-                Descrição: *
+                Descrição:
                 <input
                   type="text"
                   name="description"
@@ -259,7 +323,7 @@ export default function Home() {
                 />
               </label>
               <label>
-                Preço: *
+                Preço:
                 <input
                   type="number"
                   name="price"
@@ -280,8 +344,8 @@ export default function Home() {
                 />
               </label>
               <div className="modal-actions">
-                <button onClick={adicionarNovoProduto}>Adicionar</button>
-                <button onClick={fecharModal}>Cancelar</button>
+                <button className="btn-adicionar" onClick={adicionarNovoProduto}>Adicionar</button>
+                <button className="btn-cancelar" onClick={fecharModal}>Cancelar</button>
               </div>
             </div>
           </div>

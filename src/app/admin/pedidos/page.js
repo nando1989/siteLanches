@@ -7,9 +7,11 @@ import MenuLateral from "@/components/MenuLateral/menuLateral";
 export default function Home() {
   return (
     <div className="container-pedidos">
-      <MenuLateral/>
+      <MenuLateral />
+      
       <div className="card-kanban">
-      <KanbanBoard />
+        
+        <KanbanBoard />
       </div>
     </div>
   );

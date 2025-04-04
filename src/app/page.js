@@ -12,88 +12,84 @@ import Footer from "../components/Footer/Footer";
 import WhatsApp from "@/components/whatsappButton/whatsappButton";
 import Card from "@/components/Cards/cards";
 import CartIcon from "@/components/CartIcon/cartIcon";
-import { database } from "../../firebaseConfig"; // Ajuste o caminho conforme necessário// Aponte para o arquivo onde você configurou o Firebase
+import { database } from "../../firebaseConfig";
 import { getDatabase, ref, get } from "firebase/database";
 
 const Home = () => {
   const [bannerImages, setBannerImages] = useState([]);
-
-  const [produtos, setProdutos] = useState([]);
-
-  // Função para buscar produtos do Firestore
-  const fetchProdutos = async () => {
-    try {
-      const produtosRef = ref(database, "products"); // Referência para o nó "products"
-      const snapshot = await get(produtosRef); // Busca os dados
-      if (snapshot.exists()) {
-        const produtosData = snapshot.val(); // Extrai os dados
-        const produtosList = Object.keys(produtosData).map(key => ({
-          id: key,
-          ...produtosData[key]
-        }));
-        setProdutos(produtosList);
-      } else {
-        console.log("Nenhum dado encontrado");
-      }
-    } catch (error) {
-      console.error("Erro ao buscar produtos:", error);
-    }
-  };
-
-
-  useEffect(() => {
-    fetchProdutos(); // Chama a função quando o componente monta
-  }, []);
-
-  useEffect(() => {
-    const updateImages = () => {
-      if (window.innerWidth <= 768) {
-
-        setBannerImages(["/banner7.avif", "/banner8.avif", "/banner9.avif", "/banner10.avif"]);
-      } else {
-
-        setBannerImages(["/banner1.avif", "/banner2.avif", "/banner3.avif"]);
-      }
-    };
-
-    updateImages();
-    window.addEventListener("resize", updateImages);
-
-    return () => {
-      window.removeEventListener("resize", updateImages);
-    };
-  }, []);
-
-  const scrollToSection = (sectionId) => {
-    const section = document.getElementById(sectionId);
-    if (section) {
-      section.scrollIntoView({ behavior: "smooth" });
-    }
-  };
-
+  const [sections, setSections] = useState({
+    section1: [],
+    section2: [],
+    section3: []
+  });
   const [aberto, setAberto] = useState(true);
 
+  // Função para buscar produtos de todas as seções
+  const fetchSections = async () => {
+    try {
+      const db = getDatabase();
+      const sectionsData = {};
+      
+      // Busca dados para cada seção
+      for (const section of ['section1', 'section2', 'section3']) {
+        const sectionRef = ref(db, section);
+        const snapshot = await get(sectionRef);
+        
+        if (snapshot.exists()) {
+          sectionsData[section] = Object.keys(snapshot.val()).map(key => ({
+            id: key,
+            ...snapshot.val()[key]
+          }));
+        } else {
+          sectionsData[section] = [];
+        }
+      }
+      
+      setSections(sectionsData);
+    } catch (error) {
+      console.error("Erro ao buscar seções:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchSections();
+    
+    // Código para banners responsivos (mantido do original)
+    const updateImages = () => {
+      setBannerImages(
+        window.innerWidth <= 768
+          ? ["/banner7.avif", "/banner8.avif", "/banner9.avif", "/banner10.avif"]
+          : ["/banner1.avif", "/banner2.avif", "/banner3.avif"]
+      );
+    };
+    
+    updateImages();
+    window.addEventListener("resize", updateImages);
+    return () => window.removeEventListener("resize", updateImages);
+  }, []);
+
+  // Verificação de horário comercial (mantido do original)
   useEffect(() => {
     const verificarHorario = () => {
       const agora = new Date();
-      const hora = agora.getHours();
-      const minutos = agora.getMinutes();
-
-      const horaAtual = hora * 60 + minutos;
-      const horaAbertura = 11 * 60;
-      const horaFechamento = 24 * 60 + 30;
-
-      setAberto(horaAtual >= horaAbertura && horaAtual <= horaFechamento);
+      const horaAtual = agora.getHours() * 60 + agora.getMinutes();
+      setAberto(horaAtual >= 660 && horaAtual <= 1470); // 11:00 às 00:30
     };
-
+    
     verificarHorario();
     const intervalo = setInterval(verificarHorario, 60000);
-
     return () => clearInterval(intervalo);
   }, []);
 
+  // Função para rolagem suave (mantido do original)
+  const scrollToSection = (sectionId) => {
+    const section = document.getElementById(sectionId);
+    if (section) section.scrollIntoView({ behavior: "smooth" });
+  };
+
   return (
     <div className="container">
+      {/* Banner Swiper */}
       <div className="containerSlide">
         <Swiper
           modules={[Navigation, Pagination, Autoplay]}
@@ -102,20 +98,16 @@ const Home = () => {
           autoplay={{ delay: 3000 }}
           loop
           className="mySwiper"
-          alt="imagem lanche"
         >
           {bannerImages.map((image, index) => (
             <SwiperSlide key={index}>
-              <img
-                className="imgBanner"
-                src={image}
-                alt={`Banner ${index + 1}`}
-              />
+              <img className="imgBanner" src={image} alt={`Banner ${index + 1}`} />
             </SwiperSlide>
           ))}
         </Swiper>
       </div>
 
+      {/* Cabeçalho com informações */}
       <div className="containerForm">
         <div className="containerTitleServices">
           <div className="containerOpen">
@@ -135,6 +127,7 @@ const Home = () => {
             </div>
             <div className="containerbuttonAvaliation">avaliação!</div>
           </div>
+          
           <div className="containerMin">
             <div><strong>Pedido minimo</strong>: R$20,00</div>
             <div className="containerStar">
@@ -142,206 +135,88 @@ const Home = () => {
               <div className="avaliation"><p>(4.7)</p></div>
             </div>
           </div>
+          
           <div className="containerWhatsapp">
             <FaWhatsapp className="faWhatsapp" />
             <p>Whatsapp</p>
           </div>
+          
           <div className="containerWellcome">
             Seja bem vindo(a) ao nosso site. Fique a vontade e faça seu pedido abaixo.
           </div>
+          
           <div className="containerButtonInput">
             <div className="containerButtonMenu">
-              <button onClick={() => scrollToSection("hamburguer")}>Hamburguer</button>
-              <button onClick={() => scrollToSection("hotdog")}>Hotdog</button>
-              <button onClick={() => scrollToSection("petiscos")}>Petiscos</button>
-              <button onClick={() => scrollToSection("bebidas")}>Bebidas</button>
+              <button onClick={() => scrollToSection("section1")}>Sanduiches</button>
+              <button onClick={() => scrollToSection("section2")}>Hotdog</button>
+              <button onClick={() => scrollToSection("section3")}>Bebidas</button>
             </div>
-
           </div>
         </div>
       </div>
 
-      {/* Seção Hamburguer */}
-      <div id="hamburguer" className="imgFood">
+      {/* Seção 1 */}
+      <div id="section1" className="imgFood">
         <div className="titleFood">
-          <h2>Hamburguer</h2>
+          <h2><strong>Sanduiches</strong></h2>
         </div>
-        <img
-          src="/hamburguer.png"
-          alt="Caminhão de frete"
-          className="imghamburguer"
-        />
-        {produtos.map(produto => (
+        {sections.section1.map(produto => (
           <Card
-            
             key={produto.id}
-            title={produto.name} // Use o ID como título (ou adicione um campo "nome" no banco de dados)
-            description={produto.description}
-            price={produto.price}
-            imageUrl="/malibu9.png"
-            composição={produto.composition}
-            itens={["hamburguer"]}
+            title={produto.name || "Sem nome"}
+            description={produto.description || ""}
+            price={produto.price || "0,00"}
+            imageUrl={produto.imageUrl || "/semImg.png"}
+            composição={produto.composition || ""}
+            itens={["section1"]}
             hasCheckbox={true}
           />
         ))}
-        <Card
-          title="BanconBurguer"
-          description="Escolha seu hamburguer"
-          price="25,00"
-          imageUrl="/malibu9.png"
-          composição="Pão, Carne, Molho especial, alface, Tomate e Milho"
-          itens={["BanconBurguer"]}
-        />
-        <Card
-          title="Chicken duplo"
-          description="Escolha seu hamburguer"
-          price="25,00"
-          imageUrl="/malibumagnifico.png"
-          composição="Pão, Carne, Molho especial, alface, Tomate e Milho"
-          itens={["Chicken duplo"]}
-          hasCheckbox={true}
-        />
       </div>
 
-      {/* Seção Hotdog */}
-      <div id="hotdog" className="imgFood">
+      {/* Seção 2 */}
+      <div id="section2" className="imgFood">
         <div className="titleFood">
-          <h2>Hotdog</h2>
+          <h2><strong>Hotdog</strong></h2>
         </div>
-        <img
-          src="/hotdogImg.png"
-          alt="Caminhão de frete"
-          className="imghamburguer"
-        />
-        <Card
-          title="Hot Dog Saradão"
-          description="Escolha seu hot dog"
-          price="10,00"
-          imageUrl="/hot2.png"
-          composição="Pão, Salsicha, Molho especial, Ovo de codorna, alface, Tomate, Milho e Ervilha"
-          itens={["Hot dog saradão"]}
-          hasCheckbox={true}
-          checkboxLabels={{
-            "Hot dog saradão": ["Molho especial R$ 3,00", "queijo Cheddar R$ 3,00"],
-          }}
-        />
-        <Card
-          title="Hot Dog Simples"
-          description="Escolha seu hot dog"
-          price="25,00"
-          imageUrl="/hot1.png"
-          composição="Pão, Salsicha, Molho especial, Ovo de codorna, alface, Tomate, Milho e Ervilha"
-          itens={["Hot dog saradão"]}
-          hasCheckbox={true}
-          checkboxLabels={{
-            "Hot dog saradão": ["Molho especial R$ 3,00", "queijo Cheddar R$ 3,00"],
-          }}
-        />
-        <Card
-          title="Hot Dog de linguiça"
-          description="Escolha seu hot dog"
-          price="25,00"
-          imageUrl="/hot3.png"
-          composição="Pão, Salsicha, Molho especial, Ovo de codorna, alface, Tomate, Milho e Ervilha"
-          itens={["Hot dog saradão"]}
-        />
+        {sections.section2.map(produto => (
+          <Card
+            key={produto.id}
+            title={produto.name || "Sem nome"}
+            description={produto.description || ""}
+            price={produto.price || "0,00"}
+            imageUrl={produto.imageUrl || "/semImg.png"}
+            composição={produto.composition || ""}
+            itens={["section2"]}
+            hasCheckbox={true}
+          />
+        ))}
       </div>
 
-      {/* Seção Petiscos */}
-      <div id="petiscos" className="imgFood">
+      {/* Seção 3 */}
+      <div id="section3" className="imgFood">
         <div className="titleFood">
-          <h2>Petiscos</h2>
+          <h2><strong>Bebidas</strong></h2>
         </div>
-        <img
-          src="/petiscoImg.png"
-          alt="Caminhão de frete"
-          className="imghamburguer"
-        />
-        <Card
-          title="Caixa de petiscos"
-          description="Serve 5 até pessoas"
-          price="49,90"
-          imageUrl="/pet1.png"
-          composição="teste"
-          itens={["Hot dog saradão"]}
-          hasCheckbox={true}
-          checkboxLabels={{
-            "Hot dog saradão": ["Molho especial R$ 3,00", "queijo Cheddar R$ 3,00"],
-          }}
-        />
-        <Card
-          title="Isca de frango com anel de cebola"
-          description="Serve até 2 pessoas"
-          price="24,90"
-          imageUrl="/pet2.png"
-          composição="teste"
-          itens={["Hot dog saradão"]}
-          hasCheckbox={true}
-          checkboxLabels={{
-            "Hot dog saradão": ["Molho especial R$ 3,00", "queijo Cheddar R$ 3,00"],
-          }}
-        />
-        <Card
-          title="Batata frita com anel de cebola"
-          description="Serve até 2 pessoas"
-          price="24,90"
-          imageUrl="/pet3.png"
-          composição="teste"
-          itens={["Hot dog saradão"]}
-          hasCheckbox={true}
-          checkboxLabels={{
-            "Hot dog saradão": ["Molho especial R$ 3,00", "queijo Cheddar R$ 3,00"],
-          }}
-        />
+        {sections.section3.map(produto => (
+          <Card
+            key={produto.id}
+            title={produto.name || "Sem nome"}
+            description={produto.description || ""}
+            price={produto.price || "0,00"}
+            imageUrl={produto.imageUrl || "/semImg.png"}
+            composição={produto.composition || ""}
+            itens={["section3"]}
+            hasCheckbox={true}
+          />
+        ))}
       </div>
 
-      {/* Seção Bebidas */}
-      <div id="bebidas" className="imgFood">
-        <div className="titleFood">
-          <h2>Bebidas</h2>
-        </div>
-        <img
-          src="/bebidas.png"
-          alt="Caminhão de frete"
-          className="imghamburguer"
-        />
-        <Card
-          title="Guaravita"
-          description="Copo com 300 ml"
-          composição="Copo com 350 ml"
-          price="3,00"
-          imageUrl="/guaravita.png"
-          itens={["guaravita"]}
-          limiteMaximo={30}
-          precoFixo={true}
-        />
-        <Card
-          title="Coca-cola"
-          description="Lata com 350 ml"
-          composição="lata com 350 ml"
-          price="7,00"
-          imageUrl="/cocacola.png"
-          itens={["Coca-cola"]}
-          limiteMaximo={50}
-          precoFixo={true}
-        />
-        <Card
-          title="Suco de laranja"
-          description="Copo com 250 ml"
-          composição="Copo com 250 ml"
-          price="5,00"
-          imageUrl="/suco.png"
-          itens={["Suco natural"]}
-          limiteMaximo={100}
-          precoFixo={true}
-        />
-      </div>
-
+      {/* Rodapé */}
       <div className="containerFooter">
         <Footer />
         <WhatsApp />
       </div>
-
 
       <CartIcon />
     </div>

@@ -58,6 +58,9 @@ const KanbanBoard = () => {
      
 
       <div className="conteudo-principal">
+      <div className="container-title-pedidos">
+          <h2>Lista de Produtos</h2>
+        </div>
         <DndContext onDragEnd={handleDragEnd}>
           <div className="kanban-board">
             {["Novo", "Preparando", "Pronto", "Na Rua"].map((status) => (

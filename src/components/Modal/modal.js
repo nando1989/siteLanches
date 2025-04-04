@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './style.css';
 import { useCart } from '../../context/CartContext';
 
-export const Modal = ({ isOpen, onClose, titulo, composição, imageUrl, observation, formattedPrice, itens = [], hasCheckbox = false, checkboxLabels = {}, limiteMaximo = 30 }) => {
+export const Modal = ({ isOpen, onClose, name, titulo, composiçao, imageUrl, observation, formattedPrice, itens = [], hasCheckbox = false, checkboxLabels = {}, limiteMaximo = 30 }) => {
   
   
   
@@ -63,7 +63,7 @@ export const Modal = ({ isOpen, onClose, titulo, composição, imageUrl, observa
       const quantidadeNumerica = parseInt(quantidade) || 0;
 
       return {
-        name: item,
+        name: titulo,
         quantity: quantidadeNumerica,
         price: precoNumerico,
         total: precoNumerico * quantidadeNumerica,
@@ -98,7 +98,7 @@ export const Modal = ({ isOpen, onClose, titulo, composição, imageUrl, observa
           <div className="modal-text">
             <h2>{titulo}</h2>
             <h3 className="vermelho">R$ {formattedPrice}</h3>
-            <p>{composição}</p>
+            <p>{composiçao}</p>
             <textarea
               className="area-observation"
               placeholder="Ex. tirar cebola, ovo, etc."
@@ -112,7 +112,7 @@ export const Modal = ({ isOpen, onClose, titulo, composição, imageUrl, observa
               <div key={item} className="area-item-all">
                 <div className="cont-item-all">
                   <div className="name-item">
-                    <p>{item}</p>
+                    <p>{titulo}</p>
                   </div>
                   <div className="cont-item">
                     <button onClick={() => diminuir(item)}>-</button>

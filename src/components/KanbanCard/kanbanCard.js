@@ -20,13 +20,6 @@ const KanbanCard = ({ pedido, onDelete }) => {
 
   return (
     <div className="card">
-      <button 
-        className="btn-excluir"
-        onClick={handleExcluirPedido}
-        title="Excluir pedido"
-      >
-        ×
-      </button>
       
      
       <p><strong>Cliente:</strong> </p>
