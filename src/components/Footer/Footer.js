@@ -29,7 +29,6 @@ const Footer = () => {
   };
 
   useEffect(() => {
-    fetchSections();
     fetchInfo();
   }, []);
 
