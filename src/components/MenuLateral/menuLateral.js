@@ -25,7 +25,7 @@ const MenuLateral = () => {
               <Link href="/admin/produtos" style={{ textDecoration: "none", color: "inherit" }}>Produtos</Link>
             </li>
             <li>
-              <Link href="/admin/configuracoes" style={{ textDecoration: "none", color: "inherit" }}>Configurações</Link>
+              <Link href="/admin/config" style={{ textDecoration: "none", color: "inherit" }}>Configurações</Link>
             </li>
           </ul>
         </div>

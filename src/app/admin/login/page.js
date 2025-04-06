@@ -13,21 +13,20 @@ export default function Login() {
   const handleLogin = (e) => {
     e.preventDefault();
     
-    if (username === "serrafrete" && password === "3641") {
+    if (username === "sitemestre@gmail.com" && password === "123456") {
       alert("Login bem-sucedido!");
-      router.push("/budget");
+      router.push("/admin/produtos");
     } else {
       alert("Credenciais inválidas!");
     }
   };
 
   return (<>
-  <Navbar/>
     <div className="login-container">
     <img
-        src="/logo.png"
+        src="/favicon.ico"
         alt="Caminhão de frete"
-        className="motoImg"
+        className="logoImg"
       />
       <h1>Administração</h1>
       <form onSubmit={handleLogin}>

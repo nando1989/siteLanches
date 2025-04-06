@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './style.css';
 import { useCart } from '../../context/CartContext';
 
-export const Modal = ({ isOpen, onClose, name, titulo, composiçao, imageUrl, observation, formattedPrice, itens = [], hasCheckbox = false, checkboxLabels = {}, limiteMaximo = 30 }) => {
+export const Modal = ({ isOpen, onClose, titulo, composiçao, imageUrl, observation, formattedPrice, itens = [], hasCheckbox = false, checkboxLabels = {}, limiteMaximo = 30 }) => {
   
   
   
@@ -67,7 +67,7 @@ export const Modal = ({ isOpen, onClose, name, titulo, composiçao, imageUrl, ob
         quantity: quantidadeNumerica,
         price: precoNumerico,
         total: precoNumerico * quantidadeNumerica,
-        observation: localObservation, // Usa o estado local
+        observation: localObservation, 
       };
     });
 
@@ -98,7 +98,7 @@ export const Modal = ({ isOpen, onClose, name, titulo, composiçao, imageUrl, ob
           <div className="modal-text">
             <h2>{titulo}</h2>
             <h3 className="vermelho">R$ {formattedPrice}</h3>
-            <p>{composiçao}</p>
+            <p >{composiçao}</p>
             <textarea
               className="area-observation"
               placeholder="Ex. tirar cebola, ovo, etc."
@@ -143,7 +143,7 @@ export const Modal = ({ isOpen, onClose, name, titulo, composiçao, imageUrl, ob
 
         <div className='container-button-avançar'>
           <button className="modal-button" onClick={handleAddToCart}>
-            Adicionar ao carrinho ({formattedPrice})
+            Adicionar ao carrinho 
           </button>
         </div>
       </div>

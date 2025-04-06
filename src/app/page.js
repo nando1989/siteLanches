@@ -22,39 +22,65 @@ const Home = () => {
     section2: [],
     section3: []
   });
+
+  const [info, setInfo] = useState({});
+
   const [aberto, setAberto] = useState(true);
 
-  // Função para buscar produtos de todas as seções
+  // Busca dados das seções (listas)
   const fetchSections = async () => {
     try {
       const db = getDatabase();
       const sectionsData = {};
-      
-      // Busca dados para cada seção
-      for (const section of ['section1', 'section2', 'section3']) {
+  
+      for (const section of ['section1', 'section2', 'section3', 'info']) {
         const sectionRef = ref(db, section);
         const snapshot = await get(sectionRef);
-        
+  
         if (snapshot.exists()) {
-          sectionsData[section] = Object.keys(snapshot.val()).map(key => ({
+          const data = snapshot.val();
+          // Se for a seção "info", salva como objeto normal
+          sectionsData[section] = section === "info" ? data : Object.keys(data).map(key => ({
             id: key,
-            ...snapshot.val()[key]
+            ...data[key]
           }));
         } else {
-          sectionsData[section] = [];
+          sectionsData[section] = section === "info" ? {} : [];
         }
       }
-      
+  
       setSections(sectionsData);
     } catch (error) {
       console.error("Erro ao buscar seções:", error);
     }
   };
+  
+
+  // Busca dados da seção 'info'
+  const fetchInfo = async () => {
+    try {
+      const db = getDatabase();
+      const infoRef = ref(db, 'info');
+      const snapshot = await get(infoRef);
+
+      if (snapshot.exists()) {
+        setInfo(snapshot.val());
+      } else {
+        console.log("Nenhuma informação encontrada em 'info'");
+      }
+    } catch (error) {
+      console.error("Erro ao buscar info:", error);
+    }
+  };
+
+  // Carregar tudo ao iniciar
+
+
 
   useEffect(() => {
     fetchSections();
-    
-    // Código para banners responsivos (mantido do original)
+    fetchInfo();
+
     const updateImages = () => {
       setBannerImages(
         window.innerWidth <= 768
@@ -62,26 +88,26 @@ const Home = () => {
           : ["/banner1.avif", "/banner2.avif", "/banner3.avif"]
       );
     };
-    
+
     updateImages();
     window.addEventListener("resize", updateImages);
     return () => window.removeEventListener("resize", updateImages);
   }, []);
 
-  // Verificação de horário comercial (mantido do original)
+
   useEffect(() => {
     const verificarHorario = () => {
       const agora = new Date();
       const horaAtual = agora.getHours() * 60 + agora.getMinutes();
       setAberto(horaAtual >= 660 && horaAtual <= 1470); // 11:00 às 00:30
     };
-    
+
     verificarHorario();
     const intervalo = setInterval(verificarHorario, 60000);
     return () => clearInterval(intervalo);
   }, []);
 
-  // Função para rolagem suave (mantido do original)
+
   const scrollToSection = (sectionId) => {
     const section = document.getElementById(sectionId);
     if (section) section.scrollIntoView({ behavior: "smooth" });
@@ -89,7 +115,6 @@ const Home = () => {
 
   return (
     <div className="container">
-      {/* Banner Swiper */}
       <div className="containerSlide">
         <Swiper
           modules={[Navigation, Pagination, Autoplay]}
@@ -107,7 +132,7 @@ const Home = () => {
         </Swiper>
       </div>
 
-      {/* Cabeçalho com informações */}
+
       <div className="containerForm">
         <div className="containerTitleServices">
           <div className="containerOpen">
@@ -127,7 +152,7 @@ const Home = () => {
             </div>
             <div className="containerbuttonAvaliation">avaliação!</div>
           </div>
-          
+
           <div className="containerMin">
             <div><strong>Pedido minimo</strong>: R$20,00</div>
             <div className="containerStar">
@@ -135,16 +160,17 @@ const Home = () => {
               <div className="avaliation"><p>(4.7)</p></div>
             </div>
           </div>
-          
+
           <div className="containerWhatsapp">
             <FaWhatsapp className="faWhatsapp" />
             <p>Whatsapp</p>
           </div>
-          
+
           <div className="containerWellcome">
-            Seja bem vindo(a) ao nosso site. Fique a vontade e faça seu pedido abaixo.
+            {sections.info?.apresentacaoTopoSite || "Sem apresentação"}
           </div>
-          
+
+
           <div className="containerButtonInput">
             <div className="containerButtonMenu">
               <button onClick={() => scrollToSection("section1")}>Sanduiches</button>
@@ -167,7 +193,7 @@ const Home = () => {
             description={produto.description || ""}
             price={produto.price || "0,00"}
             imageUrl={produto.imageUrl || "/semImg.png"}
-            composição={produto.composition || ""}
+            composition={produto.composition || ""}
             itens={["section1"]}
             hasCheckbox={true}
           />
@@ -186,7 +212,7 @@ const Home = () => {
             description={produto.description || ""}
             price={produto.price || "0,00"}
             imageUrl={produto.imageUrl || "/semImg.png"}
-            composição={produto.composition || ""}
+            composition={produto.composition || ""}
             itens={["section2"]}
             hasCheckbox={true}
           />
@@ -205,7 +231,7 @@ const Home = () => {
             description={produto.description || ""}
             price={produto.price || "0,00"}
             imageUrl={produto.imageUrl || "/semImg.png"}
-            composição={produto.composition || ""}
+            composition={produto.composition || ""}
             itens={["section3"]}
             hasCheckbox={true}
           />

@@ -54,11 +54,7 @@ const KanbanBoard = () => {
 
   return (
     <div className="app-container">
-
-     
-
-      <div className="conteudo-principal">
-      <div className="container-title-pedidos">
+        <div className="container-title-pedidos">
           <h2>Lista de Produtos</h2>
         </div>
         <DndContext onDragEnd={handleDragEnd}>
@@ -69,7 +65,6 @@ const KanbanBoard = () => {
           </div>
         </DndContext>
       </div>
-    </div>
   );
 };
 
@@ -114,43 +109,42 @@ const Card = ({ pedido }) => {
   return (
 
     <>
-    <div
-      ref={setNodeRef}
-      {...listeners}
-      {...attributes}
-      className="pedido-card"
-      style={{
-        transform: transform
-          ? `translate(${transform.x}px, ${transform.y}px)`
-          : "",
-      }}
-    >
-      <button 
-        className="btn-excluir"
-        onClick={handleExcluirPedido}
-        title="Excluir pedido"
+      <div
+        ref={setNodeRef}
+        {...listeners}
+        {...attributes}
+        className="pedido-card"
+        style={{
+          transform: transform
+            ? `translate(${transform.x}px, ${transform.y}px)`
+            : "",
+        }}
       >
-        ×
-      </button>
-
-      <p><strong>Nome:</strong> {pedido.nome || "N/A"}</p>
-      <p><strong>Telefone:</strong> {pedido.telefone || "N/A"}</p>
-      <p><strong>Pagamento:</strong> {pedido.paymentMethod || "N/A"}</p>
-      <p><strong>Entrega:</strong> {pedido.tipoEntrega || "N/A"}</p>
-      <p><strong>Total:</strong> R$ {pedido.total ? pedido.total.toFixed(2) : "0.00"}</p>
-      <p><strong>Itens:</strong></p>
-      <ul>
-        {pedido.itens && pedido.itens.length > 0 ? (
-          pedido.itens.map((item, index) => (
-            <li key={index}>
-              {item.name} - Quantidade: {item.quantity} - Observação: {item.observation} - Total: R$ {item.total.toFixed(2)}
-            </li>
-          ))
-        ) : (
-          <li>Nenhum item encontrado.</li>
-        )}
-      </ul>
-    </div></>
+        <div className="container-info-client">
+          <p><strong>Nome:</strong> {pedido.nome || "N/A"}</p>
+          <p><strong>Telefone:</strong> {pedido.telefone || "N/A"}</p>
+          <p><strong>Pagamento:</strong> {pedido.paymentMethod || "N/A"}</p>
+          <p><strong>Tipo de pedido:</strong> {pedido.tipoEntrega || "N/A"}</p>
+          <p><strong>Endereço</strong> {pedido.endereco || ""}</p>
+          <p><strong>Referência</strong> {pedido.referencia || ""}</p>
+          <p><strong>Total:</strong> R$ {pedido.total ? pedido.total.toFixed(2) : "0.00"}</p>
+        </div>
+        <ul>
+          {pedido.itens && pedido.itens.length > 0 ? (
+            pedido.itens.map((item, index) => (
+              <li key={index}>
+                <strong>{item.name}: </strong>{item.quantity}<br></br>
+                {item.observation && `Observação: ${item.observation}`}
+              </li>
+            ))
+          ) : (
+            <li>Nenhum item encontrado.</li>
+          )}
+        </ul>
+        <div className="container-total">
+          <p><strong>Total:</strong> R$ {pedido.total ? pedido.total.toFixed(2) : "0.00"}</p>
+        </div>
+      </div></>
   );
 };
 

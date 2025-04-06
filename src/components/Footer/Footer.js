@@ -1,24 +1,54 @@
 import React from 'react';
+import { useState, useEffect } from "react";
 import './styles.css'; // Importando o arquivo CSS
+import { getDatabase, ref, get } from "firebase/database";
+
+
+
 
 const Footer = () => {
+  const [info, setInfo] = useState({});
+
+  // Busca dados da seção 'info'
+  const fetchInfo = async () => {
+    try {
+      const db = getDatabase();
+      const infoRef = ref(db, 'info');
+      const snapshot = await get(infoRef);
+
+      if (snapshot.exists()) {
+        setInfo(snapshot.val());
+      } else {
+        console.log("Nenhuma informação encontrada em 'info'");
+      }
+    } catch (error) {
+      console.error("Erro ao buscar info:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchSections();
+    fetchInfo();
+  }, []);
+
+
   return (
     <footer className="footer">
       <div className="footer-container">
-        
+
 
         <div className="footer-section">
-          
-        <div className="containerImgFooter">
-          <img
-            src="/logoLanches.png"
-            alt="logo"
-            className="motoImgFooter"
-          />
-        </div>
-          <h3 className="footer-title">Sobre a Super Lanches</h3>
+
+          <div className="containerImgFooter">
+            <img
+              src="/logoLanches.png"
+              alt="logo"
+              className="motoImgFooter"
+            />
+          </div>
+          <h3 className="footer-title">Quem somos.</h3>
           <p className="footer-text">
-            A melhor lanchonete da região, com um atendimento super rápido e uma entrega masi rápida ainda..
+            {info.apresentacaoTopoSite || "Sem apresentação"}
           </p>
         </div>
 
@@ -42,9 +72,9 @@ const Footer = () => {
         <div className="footer-section">
           <h3 className="footer-title">Contato</h3>
           <p className="footer-text">
-            Email: <a href="mailto:contato@serrafrete.com" className="footer-link">superlanches@gmail.com</a>
+          {info.emailRodape || "Sem apresentação"}
           </p>
-          <p className="footer-text">Telefone: (21)97714-2180</p>
+          <p className="footer-text">{info.telefoneRodape || "Sem apresentação"}</p>
 
         </div>
       </div>

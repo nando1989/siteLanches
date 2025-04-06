@@ -208,7 +208,7 @@ const CartModal = ({ onClose }) => {
                   <li key={index}>
                     <div className="modal-observation-item-column">
                       {item.name} - {item.quantity}x - R$ {item.total.toFixed(2)}
-                      {item.observation && <p>Observação: ${item.observation}</p>}
+                      {item.observation && <p>Observação:<strong> {item.observation}</strong></p>}
                     </div>
                     <button className="button-remove" onClick={() => removeFromCart(index)}>
                       <FiTrash2 size={16} />
