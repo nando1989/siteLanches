@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './style.css';
 import { useCart } from '../../context/CartContext';
 
-export const Modal = ({ isOpen, onClose, titulo, composiçao, imageUrl, observation, formattedPrice, itens = [], hasCheckbox = false, checkboxLabels = {}, limiteMaximo = 30 }) => {
+export const Modal = ({ isOpen, onClose, titulo, composition, imageUrl, observation, formattedPrice, itens = [], hasCheckbox = false, checkboxLabels = {}, limiteMaximo = 30 }) => {
   
   
   
@@ -98,7 +98,7 @@ export const Modal = ({ isOpen, onClose, titulo, composiçao, imageUrl, observat
           <div className="modal-text">
             <h2>{titulo}</h2>
             <h3 className="vermelho">R$ {formattedPrice}</h3>
-            <p >{composiçao}</p>
+            <p >{composition}</p>
             <textarea
               className="area-observation"
               placeholder="Ex. tirar cebola, ovo, etc."
