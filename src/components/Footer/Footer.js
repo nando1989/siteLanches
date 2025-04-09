@@ -8,20 +8,19 @@ import { getDatabase, ref, get } from "firebase/database";
 
 
 
-const Footer = () => {
+const Footer = ({ nomeLanchonete }) => {
   const [info, setInfo] = useState({});
 
-  // Busca dados da seção 'info'
   const fetchInfo = async () => {
     try {
       const db = getDatabase();
-      const infoRef = ref(db, 'info');
+      const infoRef = ref(db, `${nomeLanchonete}/info`);
       const snapshot = await get(infoRef);
 
       if (snapshot.exists()) {
         setInfo(snapshot.val());
       } else {
-        console.log("Nenhuma informação encontrada em 'info'");
+        console.log(`Nenhuma informação encontrada em '${nomeLanchonete}/info'`);
       }
     } catch (error) {
       console.error("Erro ao buscar info:", error);
@@ -29,8 +28,10 @@ const Footer = () => {
   };
 
   useEffect(() => {
-    fetchInfo();
-  }, []);
+    if (nomeLanchonete) fetchInfo();
+  }, [nomeLanchonete]);
+
+
 
 
   return (

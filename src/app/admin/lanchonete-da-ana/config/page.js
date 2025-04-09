@@ -2,11 +2,16 @@
 
 import { useEffect, useState } from "react";
 import { ref, onValue, update } from "firebase/database";
-import { database } from "../../../../firebaseConfig";
+import { database } from "../../../../../firebaseConfig";
+
 import './style.css';
 import MenuLateral from "@/components/MenuLateral/menuLateral";
+import { usePathname } from "next/navigation";
 
 export default function AtualizarInfoForm() {
+    const pathname = usePathname();
+    const nomeLanchonete = pathname.split("/")[2];
+
     const [infoData, setInfoData] = useState({});
     const [showModal, setShowModal] = useState(false);
     const [fieldToEdit, setFieldToEdit] = useState("");
@@ -14,14 +19,15 @@ export default function AtualizarInfoForm() {
 
     // Carrega os dados
     useEffect(() => {
-        const infoRef = ref(database, "info");
+        const infoRef = ref(database, `${nomeLanchonete}/info`);
         onValue(infoRef, (snapshot) => {
             const data = snapshot.val();
             if (data) {
                 setInfoData(data);
             }
-        });
-    }, []);
+        });console.log(infoRef)
+    }, [nomeLanchonete]); // <- Agora sim!
+    
 
     const openModal = (field, currentValue) => {
         setFieldToEdit(field);
@@ -31,7 +37,7 @@ export default function AtualizarInfoForm() {
 
     const handleSave = async () => {
         try {
-            await update(ref(database, "info"), {
+            await update(ref(database, `${nomeLanchonete}/info`), {
                 [fieldToEdit]: editedValue,
             });
             setShowModal(false);
@@ -63,7 +69,7 @@ export default function AtualizarInfoForm() {
                     <div className="modal-overlay">
                         <div className="modal">
                             <input
-                                placeholder="Email rodapé"
+                                placeholder="Novo valor"
                                 type="text"
                                 value={editedValue}
                                 onChange={(e) => setEditedValue(e.target.value)}

@@ -1,14 +1,28 @@
+
+"use client"
+
 import { useState } from "react";
 import { useCart } from '../../context/CartContext';
 import './style.css';
 import { FiX, FiTrash2 } from "react-icons/fi";
-import { collection, addDoc } from "firebase/firestore";
-import { database } from "../../../firebaseConfig"; // Importe o db do Firestore
 import { ref, push } from "firebase/database"
+import { database } from "../../../firebaseConfig";
+import { useRouter } from 'next/router';
+import Cleave from "cleave.js/react";
 
-const CartModal = ({ onClose }) => {
+
+
+const CartModal = ({ onClose, loja, value, onChange }) => {
   const { cart, removeFromCart, setCart } = useCart();
   const totalCarrinho = cart.reduce((acc, item) => acc + (item.total || 0), 0);
+
+
+
+  const whatsAppsPorLoja = {
+    'malibu-lanches': '5521999999999',
+    'lanchonete-da-ana': '5521988888888',
+    'ze-do-pastel': '5521977777777'
+  };
 
   const [paymentMethod, setPaymentMethod] = useState(null);
   const [cardBrand, setCardBrand] = useState(null);
@@ -20,7 +34,6 @@ const CartModal = ({ onClose }) => {
   const [consumirNoLocal, setConsumirNoLocal] = useState(null);
   const [precisaDeTroco, setPrecisaDeTroco] = useState(null);
   const [trocoPara, setTrocoPara] = useState("00,00");
-
   const [error, setError] = useState("");
 
   const formatarTroco = (valor) => {
@@ -35,159 +48,87 @@ const CartModal = ({ onClose }) => {
 
   const validarCampos = () => {
     setError("");
-
-    if (!nome) {
-      setError("⚠️O nome é obrigatório!");
-      return false;
-    }
-
-    if (!telefone) {
-      setError("⚠️O telefone é obrigatório!");
-      return false;
-    }
-
-    if (telefone.length !== 11 || !/^\d{11}$/.test(telefone)) {
-      setError("⚠️Verifique se não está faltando número");
-      return false;
-    }
-
-    if (tipoEntrega === "Entrega" && !endereco) {
-      setError("⚠️Endereço é obrigatório para entrega");
-      return false;
-    }
-
-    if (tipoEntrega === "Entrega" && !referencia) {
-      setError("⚠️Referência é obrigatória para entrega");
-      return false;
-    }
-
-    if (tipoEntrega === "Retirada" && !consumirNoLocal) {
-      setError("⚠️Selecione se vai consumir no local ou não.");
-      return false;
-    }
-
-    if (!paymentMethod) {
-      setError("⚠️Escolha uma forma de pagamento.");
-      return false;
-    }
-
-    if (paymentMethod === "Dinheiro" && precisaDeTroco === null) {
-      setError("⚠️Selecione se precisa de troco.");
-      return false;
-    }
-
+    if (!nome) return setError("⚠️O nome é obrigatório!") && false;
+    if (!telefone) return setError("⚠️O telefone é obrigatório!") && false;
+    if (telefone.length !== 11 || !/^\d{11}$/.test(telefone)) return setError("⚠️Verifique se não está faltando número") && false;
+    if (tipoEntrega === "Entrega" && !endereco) return setError("⚠️Endereço é obrigatório para entrega") && false;
+    if (tipoEntrega === "Entrega" && !referencia) return setError("⚠️Referência é obrigatória para entrega") && false;
+    if (tipoEntrega === "Retirada" && !consumirNoLocal) return setError("⚠️Selecione se vai consumir no local ou não.") && false;
+    if (!paymentMethod) return setError("⚠️Escolha uma forma de pagamento.") && false;
+    if (paymentMethod === "Dinheiro" && precisaDeTroco === null) return setError("⚠️Selecione se precisa de troco.") && false;
     if (paymentMethod === "Dinheiro" && precisaDeTroco === "Sim") {
-      if (!trocoPara || trocoPara === "00,00") {
-        setError("⚠️Informe o troco para quanto.");
-        return false;
-      }
-
+      if (!trocoPara || trocoPara === "00,00") return setError("⚠️Informe o troco para quanto.") && false;
       const valorTroco = parseFloat(trocoPara.replace(",", "."));
-      if (isNaN(valorTroco) || valorTroco <= 0) {
-        setError("⚠️O valor do troco deve ser maior que zero.");
-        return false;
-      }
+      if (isNaN(valorTroco) || valorTroco <= 0) return setError("⚠️O valor do troco deve ser maior que zero.") && false;
     }
-
     return true;
   };
 
-  const enviarParaRealtimeDatabase = async (pedido) => {
+  const enviarParaRealtimeDatabase = async (pedido, loja) => {
+    if (!loja) {
+      console.error("⚠️ Loja não definida! Pedido NÃO enviado.");
+      return;
+    }
+
     try {
-      const pedidosRef = ref(database, "pedidos"); // Referência para o nó "pedidos"
-      await push(pedidosRef, pedido); // Adiciona o pedido ao Realtime Database
-      console.log("Pedido enviado para o Realtime Database com sucesso!");
+      const pedidosRef = ref(database, `${loja}/pedidos`);
+      await push(pedidosRef, pedido);
+      console.log(`✅ Pedido enviado para a loja "${loja}"`);
     } catch (error) {
-      console.error("Erro ao enviar pedido para o Realtime Database:", error);
+      console.error("❌ Erro ao enviar pedido:", error);
     }
   };
 
+
+
+
   const gerarMensagemWhatsApp = () => {
-    const itensCarrinho = cart
-      .map((item) => {
-        let itemText = `${item.name} - ${item.quantity}x - R$ ${item.total.toFixed(2)}`;
-        if (item.observation) {
-          itemText += `\n   _Observação: ${item.observation}_ 
-          
-          `;
-        }
-        return itemText;
-      })
-      .join("\n");
+    const itensCarrinho = cart.map((item) => {
+      let itemText = `${item.name} - ${item.quantity}x - R$ ${item.total.toFixed(2)}`;
+      if (item.observation) itemText += `\n   _Observação: ${item.observation}_ \n`;
+      return itemText;
+    }).join("\n");
 
-    const mensagem = `
-  📋 *Pedido Realizado* 📋
-  
-  🛒 *Itens do Carrinho:*
-  
-  ${itensCarrinho}
-  
-  💰 *Total: R$ ${totalCarrinho.toFixed(2)}*
-  
-  👤 *Dados do Cliente:*
-  - Nome: ${nome}
-  - Telefone: ${telefone}
-  ${tipoEntrega === "Entrega" ? `- Endereço: ${endereco}\n- Referência: ${referencia}` : ""}
-  
-  🚚 *Tipo de Entrega:* ${tipoEntrega}
-  ${tipoEntrega === "Retirada" ? `- Consumir no Local: ${consumirNoLocal}` : ""}
-  
-  💳 *Forma de Pagamento:* ${paymentMethod}
-  ${paymentMethod === "Crédito" ? `- Bandeira: ${cardBrand}` : ""}
-  ${paymentMethod === "Dinheiro" && precisaDeTroco === "Sim" ? `- Troco para quanto: R$ ${trocoPara}` : ""}
-  
-  Quero fazer meu pedido! 🎉
-    `;
-
-    return encodeURIComponent(mensagem);
+    return encodeURIComponent(`📋 *Pedido Realizado* 📋\n\n🛒 *Itens do Carrinho:*\n\n${itensCarrinho}\n\n💰 *Total: R$ ${totalCarrinho.toFixed(2)}*\n\n👤 *Dados do Cliente:*\n- Nome: ${nome}\n- Telefone: ${telefone}\n${tipoEntrega === "Entrega" ? `- Endereço: ${endereco}\n- Referência: ${referencia}` : ""}\n\n🚚 *Tipo de Entrega:* ${tipoEntrega}\n${tipoEntrega === "Retirada" ? `- Consumir no Local: ${consumirNoLocal}` : ""}\n\n💳 *Forma de Pagamento:* ${paymentMethod}\n${paymentMethod === "Crédito" ? `- Bandeira: ${cardBrand}` : ""}\n${paymentMethod === "Dinheiro" && precisaDeTroco === "Sim" ? `- Troco para quanto: R$ ${trocoPara}` : ""}\n\nQuero fazer meu pedido! 🎉`);
   };
 
   const finalizarPedido = async () => {
-  if (!validarCampos()) return;
+    if (!validarCampos()) return;
 
-  const pedido = {
-    nome,
-    telefone,
-    endereco: tipoEntrega === "Entrega" ? endereco : null,
-    referencia: tipoEntrega === "Entrega" ? referencia : null,
-    tipoEntrega,
-    consumirNoLocal: tipoEntrega === "Retirada" ? consumirNoLocal : null,
-    paymentMethod,
-    cardBrand: paymentMethod === "Crédito" ? cardBrand : null,
-    precisaDeTroco: paymentMethod === "Dinheiro" ? precisaDeTroco : null,
-    trocoPara: paymentMethod === "Dinheiro" && precisaDeTroco === "Sim" ? trocoPara : null,
-    itens: cart.map((item) => ({
-      name: item.name,
-      quantity: item.quantity,
-      total: item.total,
-      observation: item.observation || null,
-    })),
-    total: totalCarrinho,
-    data: new Date().toISOString(),
-  };
+    const pedido = {
+      nome,
+      telefone,
+      endereco: tipoEntrega === "Entrega" ? endereco : null,
+      referencia: tipoEntrega === "Entrega" ? referencia : null,
+      tipoEntrega,
+      consumirNoLocal: tipoEntrega === "Retirada" ? consumirNoLocal : null,
+      paymentMethod,
+      cardBrand: paymentMethod === "Crédito" ? cardBrand : null,
+      precisaDeTroco: paymentMethod === "Dinheiro" ? precisaDeTroco : null,
+      trocoPara: paymentMethod === "Dinheiro" && precisaDeTroco === "Sim" ? trocoPara : null,
+      itens: cart.map((item) => ({ name: item.name, quantity: item.quantity, total: item.total, observation: item.observation || null })),
+      total: totalCarrinho,
+      data: new Date().toISOString(),
+    };
 
-    // Envia o pedido para o Firestore
-    await enviarParaRealtimeDatabase(pedido);
+    await enviarParaRealtimeDatabase(pedido, loja);
 
-    // Envia o pedido para o WhatsApp
     const mensagem = gerarMensagemWhatsApp();
-    const url = `https://wa.me/5521977384132?text=${mensagem}`;
+    const numeroWhatsApp = whatsAppsPorLoja[loja] || '5521977384132';
+    const url = `https://wa.me/${numeroWhatsApp}?text=${mensagem}`;
     window.open(url, "_blank");
 
-    // Limpa o carrinho e os campos do formulário
-
-    
-  setNome("");
-  setTelefone("");
-  setEndereco("");
-  setReferencia("");
-  setTipoEntrega("Entrega");
-  setConsumirNoLocal(null);
-  setPaymentMethod(null);
-  setCardBrand(null);
-  setPrecisaDeTroco(null);
-  setTrocoPara("00,00");
-};
+    setNome("");
+    setTelefone("");
+    setEndereco("");
+    setReferencia("");
+    setTipoEntrega("Entrega");
+    setConsumirNoLocal(null);
+    setPaymentMethod(null);
+    setCardBrand(null);
+    setPrecisaDeTroco(null);
+    setTrocoPara("00,00");
+  };
   return (
     <div className="modal-backdrop">
       <div className="modal-cart">
@@ -270,21 +211,23 @@ const CartModal = ({ onClose }) => {
             <h2>Seus dados</h2>
             <label>Nome completo</label>
             <input
+
               type="text"
               placeholder='Digite seu nome'
               value={nome}
               onChange={(e) => setNome(e.target.value)}
             />
             <label>Telefone</label>
-            <input
-              type="text"
-              placeholder='Digite seu telefone'
-              value={telefone}
-              maxLength={11}
-              onChange={(e) => {
-                const onlyNumbers = e.target.value.replace(/\D/g, "");
-                setTelefone(onlyNumbers.slice(0, 11));
+            <Cleave
+              className="border rounded p-2 w-full"
+              placeholder="(21) 99999-9999"
+              options={{
+                delimiters: ['(', ') ', '-', ''],
+                blocks: [0, 2, 5, 4],
+                numericOnly: true
               }}
+              value={value}
+              onChange={onChange}
             />
             {tipoEntrega === "Entrega" && (
               <>

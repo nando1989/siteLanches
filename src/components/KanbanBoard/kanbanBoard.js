@@ -5,27 +5,33 @@ import { DndContext, useDraggable, useDroppable } from "@dnd-kit/core";
 import { database } from "../../../firebaseConfig";
 import { ref, onValue, update } from "firebase/database";
 import "./style.css";
-import MenuLateral from "../MenuLateral/menuLateral";
-const KanbanBoard = () => {
+
+// Adicione props como parâmetro da função
+const KanbanBoard = ({ nomeLanchonete = "default" }) => {
   const [pedidos, setPedidos] = useState([]);
 
-  // Função para buscar pedidos
   const buscarPedidos = () => {
-    const pedidosRef = ref(database, "pedidos");
+    // Corrigindo o nome da variável para manter consistência
+    const pedidosRef = ref(database, `${nomeLanchonete}/pedidos`);
 
     onValue(pedidosRef, (snapshot) => {
       const data = snapshot.val();
+      console.log("Dados recebidos:", data); // 👈 Adiciona isso aqui
       if (data) {
         const pedidosArray = Object.keys(data).map((key) => ({
           id: key,
-          status: data[key].status || "Novo",
+          status: "novo",
           ...data[key],
         }));
+        console.log("Array formatado:", pedidosArray);
+        
         setPedidos(pedidosArray);
       }
     });
+
   };
 
+  
   // Carrega os pedidos automaticamente ao iniciar
   useEffect(() => {
     buscarPedidos();
@@ -40,7 +46,8 @@ const KanbanBoard = () => {
       const novoStatus = over.id;
 
       // Atualiza o status no Firebase
-      const pedidoRef = ref(database, `pedidos/${pedidoId}`);
+      // Atualiza o status no Firebase - Versão corrigida
+      const pedidoRef = ref(database, `${nomeLanchonete}/pedidos/${pedidoId}`);
       update(pedidoRef, { status: novoStatus });
 
       // Atualiza o estado local
@@ -52,19 +59,24 @@ const KanbanBoard = () => {
     }
   }, []);
 
+  
+
   return (
     <div className="app-container">
-        <div className="container-title-pedidos">
-          <h2>Lista de Produtos</h2>
-        </div>
-        <DndContext onDragEnd={handleDragEnd}>
-          <div className="kanban-board">
-            {["Novo", "Preparando", "Pronto", "Na Rua"].map((status) => (
-              <Column key={status} status={status} pedidos={pedidos} />
-            ))}
-          </div>
-        </DndContext>
+      <div className="container-title-pedidos">
+        <h2>Lista de Produtos</h2>
       </div>
+      <DndContext onDragEnd={handleDragEnd}>
+        <div className="kanban-board">
+          {["novo", "preparando", "pronto", "na rua"].map((status) => (
+            <Column key={status} status={status} pedidos={pedidos} />
+            
+          ))}
+
+        </div>
+      </DndContext>
+    </div>
+    
   );
 };
 
@@ -105,6 +117,9 @@ const Card = ({ pedido }) => {
   const { attributes, listeners, setNodeRef, transform } = useDraggable({
     id: pedido.id,
   });
+
+
+  console.log("PEDIDOS FORMATADOS:", pedido);
 
   return (
 

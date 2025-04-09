@@ -1,13 +1,23 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
+import { useParams } from "next/navigation";
 import "./style.css";
 import MenuLateral from "@/components/MenuLateral/menuLateral";
 import { getDatabase, ref, onValue, set, get, remove } from "firebase/database";
-import { database } from "../../../../firebaseConfig";
+import { database } from "../../../../../firebaseConfig";
+import { usePathname } from "next/navigation";
+
 
 export default function Home() {
-  // Estados do componente
+  const pathname = usePathname();
+  const params = useParams();
+  
+  const nomeLanchonete = useMemo(() => {
+    const parts = pathname.split("/");
+    return parts[2] || "default";
+  }, [pathname]);
+
   const [produtos, setProdutos] = useState([]);
   const [produtoSelecionado, setProdutoSelecionado] = useState(null);
   const [modalAberto, setModalAberto] = useState(false);
@@ -17,57 +27,51 @@ export default function Home() {
     description: "",
     price: "",
     composition: "",
-    section: "section1" // Novo campo para selecionar a seção
+    section: "section1"
   });
 
   // Carrega os produtos do Firebase
   useEffect(() => {
     const loadProducts = async () => {
       try {
-        // Carrega produtos de todas as seções
-        const sections = ['section1', 'section2', 'section3'];
+        const sections = ["section1", "section2", "section3"];
         let allProducts = [];
-
+        
         for (const section of sections) {
-          const sectionRef = ref(database, section);
+          const sectionRef = ref(database, `${nomeLanchonete}/${section}`);
           const snapshot = await get(sectionRef);
-
+          
           if (snapshot.exists()) {
-            const sectionProducts = Object.keys(snapshot.val()).map(key => ({
+            const sectionProducts = Object.keys(snapshot.val()).map((key) => ({
               id: key,
-              section: section, // Adiciona a seção de origem
-              ...snapshot.val()[key]
+              section: section,
+              ...snapshot.val()[key],
             }));
             allProducts = [...allProducts, ...sectionProducts];
           }
         }
-
+  
         setProdutos(allProducts.sort((a, b) => parseInt(a.id) - parseInt(b.id)));
       } catch (error) {
         console.error("Erro ao carregar produtos:", error);
       }
     };
-
+  
     loadProducts();
-  }, []);
+  }, [nomeLanchonete]);
+  
 
-  // Função para gerar o próximo ID sequencial para uma seção
   const getNextId = async (section) => {
     try {
-      const snapshot = await get(ref(database, section));
-
+      const snapshot = await get(ref(database, `${nomeLanchonete}/${section}`));
       if (!snapshot.exists()) return "01";
 
       const produtosData = snapshot.val();
-      const ids = Object.keys(produtosData)
-        .map(id => parseInt(id))
-        .filter(id => !isNaN(id));
-
+      const ids = Object.keys(produtosData).map(id => parseInt(id)).filter(id => !isNaN(id));
       if (ids.length === 0) return "01";
 
       const maxId = Math.max(...ids);
       const nextId = maxId + 1;
-
       return nextId.toString().padStart(2, '0');
     } catch (error) {
       console.error("Erro ao buscar próximo ID:", error);
@@ -75,7 +79,6 @@ export default function Home() {
     }
   };
 
-  // Funções para abrir/fechar modais
   const abrirModal = (produto) => {
     setProdutoSelecionado(produto);
     setModalAberto(true);
@@ -98,7 +101,6 @@ export default function Home() {
     });
   };
 
-  // Manipuladores de formulário
   const handleChange = (e) => {
     const { name, value } = e.target;
     setProdutoSelecionado(prev => ({ ...prev, [name]: value }));
@@ -112,16 +114,12 @@ export default function Home() {
     }));
   };
 
-  // Excluir produto
   const excluirProduto = async () => {
-    if (!produtoSelecionado || !window.confirm("Tem certeza que deseja excluir este produto?")) {
-      return;
-    }
-
+    if (!produtoSelecionado || !window.confirm("Tem certeza que deseja excluir este produto?")) return;
     try {
-      await remove(ref(database, `${produtoSelecionado.section}/${produtoSelecionado.id}`));
+      await remove(ref(database, `${nomeLanchonete}/${produtoSelecionado.section}/${produtoSelecionado.id}`));
+
       fecharModal();
-      // Atualiza a lista de produtos após exclusão
       setProdutos(produtos.filter(p => p.id !== produtoSelecionado.id));
     } catch (error) {
       console.error("Erro ao excluir produto:", error);
@@ -129,7 +127,6 @@ export default function Home() {
     }
   };
 
-  // Salvar edição de produto existente
   const salvarEdicao = async () => {
     if (!produtoSelecionado.name || !produtoSelecionado.description || !produtoSelecionado.price) {
       alert("Preencha todos os campos obrigatórios!");
@@ -137,12 +134,13 @@ export default function Home() {
     }
 
     try {
-      await set(ref(database, `${produtoSelecionado.section}/${produtoSelecionado.id}`), {
+      await set(ref(database, `${nomeLanchonete}/${produtoSelecionado.section}/${produtoSelecionado.id}`), {
         name: produtoSelecionado.name,
         description: produtoSelecionado.description,
         price: parseFloat(produtoSelecionado.price),
         composition: produtoSelecionado.composition || ""
       });
+      
       fecharModal();
     } catch (error) {
       console.error("Erro ao editar produto:", error);
@@ -150,30 +148,28 @@ export default function Home() {
     }
   };
 
-  // Adicionar novo produto
   const adicionarNovoProduto = async () => {
     if (!novoProduto.name || !novoProduto.description || !novoProduto.price) {
       alert("Preencha todos os campos obrigatórios!");
       return;
     }
-
+  
     try {
       const novoId = await getNextId(novoProduto.section);
-
-      await set(ref(database, `${novoProduto.section}/${novoId}`), {
-        name: novoProduto.name,
-        description: novoProduto.description,
-        price: parseFloat(novoProduto.price),
-        composition: novoProduto.composition || ""
-      });
-
+await set(ref(database, `${nomeLanchonete}/${novoProduto.section}/${novoId}`), {
+  name: novoProduto.name,
+  description: novoProduto.description,
+  price: parseFloat(novoProduto.price),
+  composition: novoProduto.composition || ""
+});
+      console.log("Produto salvo com sucesso!");
       fecharModal();
     } catch (error) {
       console.error("Erro ao adicionar produto:", error);
       alert("Erro ao adicionar produto. Verifique o console.");
     }
   };
-
+  
   // Renderização do componente
   return (
     <div className="container-produtos">
