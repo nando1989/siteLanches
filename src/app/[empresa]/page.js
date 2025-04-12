@@ -3,7 +3,6 @@ import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import { usePathname } from "next/navigation";
-
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination, Autoplay } from "swiper/modules";
 import { FaWhatsapp, FaStar } from "react-icons/fa";
@@ -11,27 +10,21 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import "./page.css";
-
 import Footer from "@/components/Footer/Footer";
 import WhatsApp from "@/components/whatsappButton/whatsappButton";
 import Card from "@/components/Cards/cards";
 import CartIcon from "@/components/CartIcon/cartIcon";
-
-import { getDatabase, ref, get } from "firebase/database";
-import CartModal from "@/components/CartModal/cartModal";
+import { getDatabase, ref, get, child } from "firebase/database";
 
 const Home = () => {
   const params = useParams();
-  const empresa = params.empresa; 
+  const empresa = params.empresa;
   const pathname = usePathname();
   const nomeLanchonete = pathname.split("/")[1]; // ou [2], depende da estrutura
 
   const [bannerImages, setBannerImages] = useState([]);
-  const [sections, setSections] = useState({
-    section1: [],
-    section2: [],
-    section3: []
-  });
+  const [sections, setSections] = useState({});
+
 
   const [info, setInfo] = useState({});
   const [aberto, setAberto] = useState(true);
@@ -41,24 +34,44 @@ const Home = () => {
       const db = getDatabase();
       const sectionsData = {};
 
-      for (const section of ["section1", "section2", "section3", "info"]) {
-        const sectionRef = ref(db, `${empresa}/${section}`);
-        const snapshot = await get(sectionRef);
+      // Busca todos os dados da empresa
+      const empresaRef = ref(db, empresa);
+      const snapshot = await get(empresaRef);
 
-        if (snapshot.exists()) {
-          const data = snapshot.val();
-          sectionsData[section] = section === "info"
-            ? data
-            : Object.keys(data).map(key => ({
-                id: key,
-                ...data[key],
-              }));
-        } else {
-          sectionsData[section] = section === "info" ? {} : [];
+      if (snapshot.exists()) {
+        const allData = snapshot.val();
+
+        // Filtra apenas as sections que começam com 'section' e são numéricas
+        const sectionKeys = Object.keys(allData).filter(key =>
+          key.startsWith('section') && !isNaN(key.replace('section', ''))
+        );
+
+        // Processa cada section encontrada
+        for (const sectionKey of sectionKeys) {
+          const sectionContent = allData[sectionKey];
+
+          // Filtra os itens (ignorando o campo 'name' se existir)
+          const items = Object.keys(sectionContent)
+            .filter(key => key !== 'name')
+            .map(key => ({
+              id: key,
+              ...sectionContent[key]
+            }));
+
+          sectionsData[sectionKey] = {
+            name: sectionContent.name || '', // Salva o nome da seção separadamente
+            items: items
+          };
         }
-      }
 
-      setSections(sectionsData);
+        // Adiciona outras seções importantes (info, categories, pedidos)
+        if (allData.info) sectionsData.info = allData.info;
+        if (allData.categories) sectionsData.categories = allData.categories;
+        if (allData.pedidos) sectionsData.pedidos = allData.pedidos;
+
+        setSections(sectionsData);
+        console.log("Dados processados:", sectionsData); // Verifique esta saída
+      }
     } catch (error) {
       console.error("Erro ao buscar dados:", error);
     }
@@ -96,6 +109,50 @@ const Home = () => {
     const section = document.getElementById(sectionId);
     if (section) section.scrollIntoView({ behavior: "smooth" });
   };
+
+  async function buscarCategorias(lojaSlug) {
+    try {
+      const dbRef = ref(getDatabase());
+      const categoriesRef = child(dbRef, `${lojaSlug}/categories`);  // Usando lojaSlug aqui
+      const snapshot = await get(categoriesRef);
+
+      if (snapshot.exists()) {
+        const data = snapshot.val();
+
+        // Filtra todas as seções e mapeia para o formato esperado
+        const categorias = Object.keys(data)
+          .filter(key => key.startsWith('section'))  // Pegando todas as seções
+          .map((sectionKey) => ({
+            id: sectionKey,
+            name: data[sectionKey]?.name || `Seção ${sectionKey.replace('section', '')}`
+          }));
+
+        return categorias;
+      } else {
+        return [];
+      }
+    } catch (error) {
+      console.error("Erro ao buscar categorias:", error);
+      return [];
+    }
+  }
+
+
+
+  const [categorias, setCategorias] = useState([]);
+
+  useEffect(() => {
+    if (empresa) {
+      buscarCategorias(empresa)
+        .then(setCategorias)
+        .catch(error => {
+          console.error("Erro ao carregar categorias:", error);
+          setCategorias([]);
+        });
+    }
+  }, [empresa]);
+
+
 
   return (
     <div className="container">
@@ -147,38 +204,51 @@ const Home = () => {
             {sections.info?.apresentacaoTopoSite || "Sem apresentação"}
           </div>
 
-          <div className="containerButtonInput">
-            <div className="containerButtonMenu">
-              <button onClick={() => scrollToSection("section1")}>Sanduíches</button>
-              <button onClick={() => scrollToSection("section2")}>Hotdog</button>
-              <button onClick={() => scrollToSection("section3")}>Bebidas</button>
-            </div>
+          <div className="containerButtonMenu">
+            {Array.isArray(categorias) && categorias.length > 0 ? (
+              categorias.map((cat) => (
+                <button
+                  key={cat.id}
+                  onClick={() => scrollToSection(cat.id)}
+                >
+                  {cat.name}
+                </button>
+              ))
+            ) : (
+              <p className="text-gray-500">Nenhuma categoria disponível</p>
+            )}
           </div>
         </div>
       </div>
 
-      {["section1", "section2", "section3"].map((sec, idx) => (
-        <div key={sec} id={sec} className="imgFood">
-          <div className="titleFood">
-            <h2><strong>{["Sanduíches", "Hotdog", "Bebidas"][idx]}</strong></h2>
-          </div>
-          {sections[sec]?.map(produto => (
-            <Card
-              key={produto.id}
-              title={produto.name || "Sem nome"}
-              description={produto.description || ""}
-              price={produto.price || "0,00"}
-              imageUrl={produto.imageUrl || "/semImg.png"}
-              composition={produto.composition || ""}
-              itens={[sec]}
-              hasCheckbox={true}
-            />
-          ))}
-        </div>
-      ))}
+      {categorias.map((cat) => (
+  <div key={cat.id} id={cat.id} className="imgFood">
+    <div className="titleFood">
+      <h2><strong>{cat.name}</strong></h2>
+    </div>
+    {Object.keys(sections.categories?.[cat.id] || {})
+      .filter(produtoId => !isNaN(produtoId)) // Filtra apenas IDs numéricos
+      .map((produtoId) => {
+        const produto = sections.categories[cat.id][produtoId];
+        return (
+          <Card
+            key={produtoId}
+            title={produto?.name || "Sem nome"}
+            description={produto?.description || ""}
+            price={produto?.price || "0,00"}
+            imageUrl={produto?.imageUrl || "/semImg.png"}
+            composition={produto?.composition || ""}
+            itens={[cat.id]}
+            hasCheckbox={true}
+          />
+        );
+      })}
+  </div>
+
+))}
 
       <div className="containerFooter">
-          <Footer nomeLanchonete={nomeLanchonete} />
+        <Footer nomeLanchonete={nomeLanchonete} />
         <WhatsApp />
       </div>
 

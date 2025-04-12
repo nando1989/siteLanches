@@ -158,7 +158,9 @@ const CartModal = ({ onClose, loja, value, onChange }) => {
                 ))}
               </ul>
             )}
+            
           </div>
+          
 
           <div className='modal-total'>
             <h3>Total: R$ {totalCarrinho.toFixed(2)}</h3>

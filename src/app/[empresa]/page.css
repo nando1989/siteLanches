@@ -247,13 +247,13 @@ h1 {
   flex: 0 0 auto; /* Garante que os botões não cresçam além do necessário */
   padding: 10px 21px;
   border: none;
-  background-color: rgb(255, 174, 0);
+  background-color: brown;
   cursor: pointer;
   border-radius: 5px;
   margin-bottom: 10px;
   font-weight:900;
   font-size:medium;
-  color: rgb(77, 18, 18);
+  color: rgb(255, 255, 255);
 }
 
 
@@ -325,6 +325,19 @@ h1 {
 
 
 @media (max-width: 600px) {
+
+  .container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    width:100%;
+    height: auto;
+    background-color: rgb(255, 255, 255);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    color: black;
+  }
   
   .imgBanner{
     width: 350px;
@@ -573,20 +586,7 @@ h1 {
     border-radius: 5px;
   }
   
-
-  
-  
-
- 
-  
-
-
-
-
-
-
-
-  .imgBanner {
+.imgBanner {
     width: 100%;
     height: auto;
   }

@@ -2,21 +2,31 @@ import React, { useState, useEffect } from 'react';
 import './style.css';
 import { useCart } from '../../context/CartContext';
 
-export const Modal = ({ isOpen, onClose, titulo, composition, imageUrl, observation, formattedPrice, itens = [], hasCheckbox = false, checkboxLabels = {}, limiteMaximo = 30 }) => {
-  
-  
-  
+export const Modal = ({ 
+  isOpen, 
+  onClose, 
+  titulo, 
+  composition, 
+  imageUrl, 
+  observation, 
+  formattedPrice, 
+  itens = [], 
+  hasCheckbox = false, 
+  checkboxLabels = [], 
+  limiteMaximo = 30 
+}) => {
   const [quantidades, setQuantidades] = useState({});
   const [mostrarAviso, setMostrarAviso] = useState(false);
   const [localObservation, setLocalObservation] = useState(observation || "");
+  const [selectedFlavors, setSelectedFlavors] = useState([]);
   const { addToCart } = useCart();
 
- useEffect(() => {
-  if (Array.isArray(itens) && itens.length > 0 && Object.keys(quantidades).length === 0) {
-    const quantidadesIniciais = itens.reduce((acc, item) => ({ ...acc, [item]: 0 }), {});
-    setQuantidades(quantidadesIniciais);
-  }
-}, [itens]);
+  useEffect(() => {
+    if (Array.isArray(itens) && itens.length > 0 && Object.keys(quantidades).length === 0) {
+      const quantidadesIniciais = itens.reduce((acc, item) => ({ ...acc, [item]: 0 }), {});
+      setQuantidades(quantidadesIniciais);
+    }
+  }, [itens]);
 
   const totalSelecionado = Object.values(quantidades).reduce((acc, val) => acc + val, 0);
 
@@ -47,6 +57,19 @@ export const Modal = ({ isOpen, onClose, titulo, composition, imageUrl, observat
     }
   };
 
+  const handleFlavorSelection = (flavor) => {
+    setSelectedFlavors(prev => {
+      if (prev.includes(flavor)) {
+        return prev.filter(f => f !== flavor);
+      } else {
+        if (prev.length < limiteMaximo) {
+          return [...prev, flavor];
+        }
+        return prev;
+      }
+    });
+  };
+
   const handleAddToCart = () => {
     const itensSelecionados = Object.entries(quantidades)
       .filter(([_, quantidade]) => quantidade > 0);
@@ -58,8 +81,16 @@ export const Modal = ({ isOpen, onClose, titulo, composition, imageUrl, observat
 
     setMostrarAviso(false);
 
+    // Combina observação com sabores selecionados
+    let observationText = localObservation;
+    if (hasCheckbox && selectedFlavors.length > 0) {
+      observationText = observationText 
+        ? `${observationText} | Sabores: ${selectedFlavors.join(', ')}` 
+        : `Sabores: ${selectedFlavors.join(', ')}`;
+    }
+
     const itensParaCarrinho = itensSelecionados.map(([item, quantidade]) => {
-      const precoNumerico = parseFloat(formattedPrice );
+      const precoNumerico = parseFloat(formattedPrice);
       const quantidadeNumerica = parseInt(quantidade) || 0;
 
       return {
@@ -67,7 +98,8 @@ export const Modal = ({ isOpen, onClose, titulo, composition, imageUrl, observat
         quantity: quantidadeNumerica,
         price: precoNumerico,
         total: precoNumerico * quantidadeNumerica,
-        observation: localObservation, 
+        observation: observationText,
+        flavors: hasCheckbox ? [...selectedFlavors] : undefined
       };
     });
 
@@ -75,6 +107,9 @@ export const Modal = ({ isOpen, onClose, titulo, composition, imageUrl, observat
 
     setTimeout(() => {
       onClose();
+      // Resetar estados
+      setSelectedFlavors([]);
+      setLocalObservation("");
     }, 100);
   };
 
@@ -98,7 +133,7 @@ export const Modal = ({ isOpen, onClose, titulo, composition, imageUrl, observat
           <div className="modal-text">
             <h2>{titulo}</h2>
             <h3 className="vermelho">R$ {formattedPrice}</h3>
-            <p >{composition}</p>
+            <p>{composition}</p>
             <textarea
               className="area-observation"
               placeholder="Ex. tirar cebola, ovo, etc."
@@ -106,6 +141,37 @@ export const Modal = ({ isOpen, onClose, titulo, composition, imageUrl, observat
               onChange={(e) => setLocalObservation(e.target.value)}
             />
           </div>
+
+          {/* Seção de seleção de sabores */}
+          {hasCheckbox && checkboxLabels.length > 0 && (
+            <div className="flavor-selection">
+              <h4>Escolha até {limiteMaximo} sabores:</h4>
+             
+              <div className="flavor-options">
+                {checkboxLabels.map((flavor, index) => (
+                  <div key={index} className="flavor-option">
+                    <input
+                      type="checkbox"
+                      id={`flavor-${index}`}
+                      checked={selectedFlavors.includes(flavor)}
+                      onChange={() => handleFlavorSelection(flavor)}
+                      disabled={
+                        selectedFlavors.length >= limiteMaximo && 
+                        !selectedFlavors.includes(flavor)
+                      }
+                    />
+                    <label htmlFor={`flavor-${index}`}>{flavor}</label>
+                  </div>
+                ))}
+              </div>
+              
+              {selectedFlavors.length > 0 && (
+                <p className="selected-flavors">
+                  Sabores selecionados: {selectedFlavors.join(', ')}
+                </p>
+              )}
+            </div>
+          )}
 
           {itens.length > 0 ? (
             itens.map((item) => (
