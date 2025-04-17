@@ -44,7 +44,7 @@ export default function Login() {
             <Image
               src="/img-land.webp"
               alt="Mockup zaPPI"
-              width={860}
+              width={900}
               height={650}
               margin-botton={50}
               className="heroImage"
