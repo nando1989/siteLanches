@@ -1,10 +1,11 @@
 /* styles/globals.css */
 body {
-  font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+  font-family: 'Inter', sans-serif;
   margin: 0;
   padding: 0;
   background-color: rgb(209, 209, 209);
   height: auto;
+  
 }
 
 .container {

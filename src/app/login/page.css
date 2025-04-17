@@ -1,0 +1,125 @@
+.login-container {
+  display: flex;
+  height: 100vh;
+  font-family: 'Inter', sans-serif;
+  background-color: white;
+}
+
+.login-box {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  background-color: white;
+  border-radius: 12px;
+  width: 950px;
+  z-index: 2;
+}
+
+.logo-area {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.logo-area h1 {
+  font-size: 1.5rem;
+  margin-top: 1rem;
+  color: #222;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+}
+
+.login-form label {
+  font-weight: 900;
+  color: #444;
+  font-size: medium;
+}
+
+.login-form input {
+  padding: 0.95rem 1rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 1rem;
+  width: 70%;
+}
+
+.login-form button {
+  padding: 0.95rem 1rem;
+  background-color: #e60023;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  width: 75%;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.login-form button:hover {
+  background-color: #cc001f;
+}
+
+.login-form .forgot {
+  text-align: center;
+  margin-top: 1rem;
+  font-size: 0.9rem;
+  color: #666;
+  text-decoration: none;
+}
+
+.login-form .forgot:hover {
+  color: #000;
+}
+
+.login-bg {
+  display: flex;
+  flex-direction: column;
+  justify-content:end;
+  align-items:center;
+  width: 65%;
+}
+
+.heroImage {
+  margin-top: 20px;
+  height: auto;
+}
+
+.img-box{
+  height: 650px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  
+}
+
+.img-logo-cap{
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.title-img{
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.title-img h2 {
+  margin: 0;
+}
+.title-img p {
+  margin: 0;
+}
+
+@media (min-width: 768px) {
+  
+
+}

@@ -5,13 +5,18 @@ import { useParams } from "next/navigation";
 import "./style.css";
 import MenuLateral from "@/components/MenuLateral/menuLateral";
 import { getDatabase, ref, onValue, set, get, remove, push } from "firebase/database";
-import { database, storage } from "../../../../../firebaseConfig"; // Adicione storage aqui
-import { ref as storageRef, uploadBytes, getDownloadURL } from "firebase/storage";
+import { database, storage, app } from "../../../../../firebaseConfig"; // Adicione storage aqui
+import { getStorage, uploadBytes, getDownloadURL } from "firebase/storage";
 import { usePathname } from "next/navigation";
+import { v4 as uuidv4 } from 'uuid';
 
 export default function Home() {
+
   const pathname = usePathname();
+  const storage = getStorage(app);
   const params = useParams();
+  const empresa = params.empresa;
+
 
   const nomeLanchonete = useMemo(() => {
     const parts = pathname.split("/");
@@ -24,6 +29,7 @@ export default function Home() {
   const [modalNovoProduto, setModalNovoProduto] = useState(false);
   const [imagePreview, setImagePreview] = useState(null);
   const [imageFile, setImageFile] = useState(null);
+
 
   // No estado do produtoSelecionado e novoProduto, adicione:
   const [produtoSelecionado, setProdutoSelecionado] = useState({
@@ -67,12 +73,12 @@ export default function Home() {
       alert('Preencha nome e preço válidos para o tamanho');
       return;
     }
-  
+
     const novoTamanhoObj = {
       nome: novoTamanho.nome.trim(),
       preco: parseFloat(novoTamanho.preco)
     };
-  
+
     if (modalAberto) {
       setProdutoSelecionado(prev => ({
         ...prev,
@@ -84,7 +90,7 @@ export default function Home() {
         tamanhos: [...(prev.tamanhos || []), novoTamanhoObj]
       }));
     }
-  
+
     setNovoTamanho({ nome: "", preco: "" });
   };
   const removerTamanho = (index) => {
@@ -113,17 +119,15 @@ export default function Home() {
   const [showNovaSecao, setShowNovaSecao] = useState(false);
   const [novaSecaoNome, setNovaSecaoNome] = useState("");
   const [sections, setSections] = useState({
-    section1: { name: "Sanduiches" },
-    section2: { name: "HotDog" },
-    section3: { name: "Bebidas" }
   });
 
   // Função para fazer upload da imagem
-  const handleImageUpload = async (file) => {
-    if (!file) return null;
+  const handleImageUpload = async (file, nomeLanchonete) => {
+    if (!file || !nomeLanchonete) return null;
 
     try {
-      const fileRef = storageRef(storage, `${nomeLanchonete}/produtos/${Date.now()}_${file.name}`);
+      const fileRef = ref(storage, `${nomeLanchonete}/produtos/${uuidv4()}-${file.name}`);
+
       await uploadBytes(fileRef, file);
       const downloadURL = await getDownloadURL(fileRef);
       return downloadURL;
@@ -133,18 +137,17 @@ export default function Home() {
     }
   };
 
-  // Função para lidar com a seleção de imagem
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setImageFile(file);
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result);
-      };
-      reader.readAsDataURL(file);
-    }
+
+  const handleImageChange = async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const previewUrl = URL.createObjectURL(file);
+    setImagePreview(previewUrl);
+    setImageFile(file);
+
   };
+
   // Função para obter o próximo ID de produto
   const getNextId = async (section) => {
     try {
@@ -170,6 +173,7 @@ export default function Home() {
     }
   };
 
+
   // Função para obter o próximo ID de seção disponível
   const getNextSectionId = async () => {
     try {
@@ -194,84 +198,82 @@ export default function Home() {
     }
   };
 
-  // Carrega os produtos e seções do Firebase
-  // Substitua o useEffect que carrega os produtos por este:
-  // No useEffect que carrega os produtos, garanta a estrutura completa:
-useEffect(() => {
-  const loadProductsAndSections = async () => {
-    try {
-      const categoriesRef = ref(database, `${nomeLanchonete}/categories`);
-      const snapshot = await get(categoriesRef);
 
-      if (snapshot.exists()) {
-        const data = snapshot.val();
-        const loadedSections = {};
-        const allProducts = [];
+  useEffect(() => {
+    const loadProductsAndSections = async () => {
+      try {
+        const categoriesRef = ref(database, `${nomeLanchonete}/categories`);
+        const snapshot = await get(categoriesRef);
 
-        Object.keys(data).forEach(sectionKey => {
-          if (sectionKey.startsWith('section')) {
-            loadedSections[sectionKey] = {
-              name: data[sectionKey]?.name || sectionKey
-            };
+        if (snapshot.exists()) {
+          const data = snapshot.val();
+          const loadedSections = {};
+          const allProducts = [];
 
-            const sectionData = data[sectionKey];
-            if (sectionData && typeof sectionData === 'object') {
-              Object.keys(sectionData).forEach(prodId => {
-                if (prodId !== 'name') {
-                  const produto = sectionData[prodId];
-                  allProducts.push({
-                    id: prodId,
-                    section: sectionKey,
-                    name: produto?.name || '',
-                    description: produto?.description || '',
-                    price: produto?.price || 0,
-                    composition: produto?.composition || '',
-                    options: produto?.options || '',
-                    upsell: produto?.upsell || '',
-                    opcionais: produto?.opcionais || '',
-                    adicionais: produto?.adicionais || '',
-                    imageUrl: produto?.imageUrl || '',
-                    temMetade: produto?.temMetade || false,
-                    tamanhos: Array.isArray(produto?.tamanhos) ? produto.tamanhos : [],
-                    tamanhoLabel: produto?.tamanhoLabel || 'Tamanho',
-                    fatiasLabel: produto?.fatiasLabel || 'Fatias'
-                  });
-                }
-              });
+          Object.keys(data).forEach(sectionKey => {
+            if (sectionKey.startsWith('section')) {
+              loadedSections[sectionKey] = {
+                name: data[sectionKey]?.name || sectionKey
+              };
+
+              const sectionData = data[sectionKey];
+              if (sectionData && typeof sectionData === 'object') {
+                Object.keys(sectionData).forEach(prodId => {
+                  if (prodId !== 'name') {
+                    const produto = sectionData[prodId];
+                    allProducts.push({
+                      id: prodId,
+                      section: sectionKey,
+                      name: produto?.name || '',
+                      description: produto?.description || '',
+                      price: produto?.price || 0,
+                      composition: produto?.composition || '',
+                      options: produto?.options || '',
+                      upsell: produto?.upsell || '',
+                      opcionais: produto?.opcionais || '',
+                      adicionais: produto?.adicionais || '',
+                      imageUrl: produto?.imageUrl || '',
+                      temMetade: produto?.temMetade || false,
+                      tamanhos: Array.isArray(produto?.tamanhos) ? produto.tamanhos : [],
+                      tamanhoLabel: produto?.tamanhoLabel || 'Tamanho',
+                      fatiasLabel: produto?.fatiasLabel || 'Fatias'
+                    });
+                  }
+                });
+              }
             }
-          }
-        });
+          });
 
-        setSections(loadedSections);
-        setProdutos(allProducts.sort((a, b) => parseInt(a.id) - parseInt(b.id)));
+          setSections(loadedSections);
+          setProdutos(allProducts.sort((a, b) => parseInt(a.id) - parseInt(b.id)));
+        }
+      } catch (error) {
+        console.error("Erro ao carregar dados:", error);
       }
-    } catch (error) {
-      console.error("Erro ao carregar dados:", error);
-    }
+    };
+
+    loadProductsAndSections();
+  }, [nomeLanchonete]);
+
+  const abrirModal = (produto) => {
+    setProdutoSelecionado({
+      name: produto?.name || "",
+      description: produto?.description || "",
+      price: produto?.price || "",
+      composition: produto?.composition || "",
+      options: produto?.options || "",
+      upsell: produto?.upsell || "",
+      opcionais: produto?.opcionais || "",
+      adicionais: produto?.adicionais || "",
+      section: produto?.section || "section1",
+      imageUrl: produto?.imageUrl || "",
+      temMetade: produto?.temMetade || false,
+      tamanhos: Array.isArray(produto?.tamanhos) ? produto.tamanhos : [],
+      tamanhoLabel: produto?.tamanhoLabel || "Tamanho",
+      fatiasLabel: produto?.fatiasLabel || "Fatias"
+    });
+    setModalAberto(true);
   };
-
-  loadProductsAndSections();
-}, [nomeLanchonete]);
-
-const abrirModal = (produto) => {
-  setProdutoSelecionado({
-    name: produto?.name || "",
-    description: produto?.description || "",
-    price: produto?.price || "",
-    composition: produto?.composition || "",
-    options: produto?.options || "",
-    upsell: produto?.upsell || "",
-    opcionais: produto?.opcionais || "",
-    adicionais: produto?.adicionais || "",
-    section: produto?.section || "section1",
-    imageUrl: produto?.imageUrl || "",
-    temMetade: produto?.temMetade || false,
-    tamanhos: Array.isArray(produto?.tamanhos) ? produto.tamanhos : [],
-    tamanhoLabel: produto?.tamanhoLabel || "Tamanho",
-    fatiasLabel: produto?.fatiasLabel || "Fatias"
-  });
-  setModalAberto(true);
-};
 
   const abrirModalNovoProduto = () => {
     setModalNovoProduto(true);
@@ -307,10 +309,40 @@ const abrirModal = (produto) => {
   };
 
   const excluirProduto = async () => {
-    if (!produtoSelecionado || !window.confirm("Tem certeza que deseja excluir este produto?")) return;
+    if (!produtoSelecionado) {
+      alert("Nenhum produto selecionado.");
+      return;
+    }
 
+    
+  
+    if (!window.confirm("Tem certeza que deseja excluir este produto?")) return;
+
+    
+  
+    // Debug: checar valores
+    console.log("Tentando excluir produto:", produtoSelecionado);
+  
+    const path = `${nomeLanchonete}/categories/${produtoSelecionado.section}/${produtoSelecionado.id}`;
+
+    console.log("DEBUG >>", {
+      nomeLanchonete,
+      section: produtoSelecionado.section,
+      id: produtoSelecionado.id
+    });
+
+    
+  
+    if (!produtoSelecionado.id) {
+      alert("Produto sem ID, não pode ser excluído.");
+      console.log("Produto selecionado:", produtoSelecionado);
+      return;
+    }
+  
     try {
-      await remove(ref(database, `${nomeLanchonete}/categories/${produtoSelecionado.section}/${produtoSelecionado.id}`));
+      await remove(ref(database, path));
+      console.log("Produto excluído com sucesso!");
+  
       setProdutos(produtos.filter(p => p.id !== produtoSelecionado.id));
       fecharModal();
     } catch (error) {
@@ -318,7 +350,10 @@ const abrirModal = (produto) => {
       alert("Erro ao excluir produto");
     }
   };
+  
 
+
+  // Corrigindo a função adicionarNovoProduto
   const salvarEdicao = async () => {
     if (!produtoSelecionado?.name || !produtoSelecionado?.description || !produtoSelecionado?.price) {
       alert("Preencha todos os campos obrigatórios!");
@@ -326,57 +361,73 @@ const abrirModal = (produto) => {
     }
 
     try {
-      // Se houver uma nova imagem, faz o upload
       let imageUrl = produtoSelecionado.imageUrl;
+
+      // Se uma nova imagem foi selecionada, faz o upload
       if (imageFile) {
-        imageUrl = await handleImageUpload(imageFile);
+        imageUrl = await handleImageUpload(imageFile, nomeLanchonete);
       }
 
-      await set(ref(database, `${nomeLanchonete}/categories/${produtoSelecionado.section}/${produtoSelecionado.id}`), {
-        name: produtoSelecionado.name,
-        description: produtoSelecionado.description,
-        price: parseFloat(produtoSelecionado.price),
-        composition: produtoSelecionado.composition || "",
-        options: produtoSelecionado.options || "",
-        opcionais: produtoSelecionado.opcionais || "",
-        adicionais: produtoSelecionado.adicionais || "",
-        upsell: produtoSelecionado.upsell || "",
-        imageUrl: imageUrl || produtoSelecionado.imageUrl || "",
-        temMetade: produtoSelecionado.temMetade || false,
-        tamanhos: produtoSelecionado.tamanhos || [],
-        tamanhoLabel: produtoSelecionado.tamanhoLabel || "Tamanho",
-        fatiasLabel: produtoSelecionado.fatiasLabel || "Fatias"
-      });
+      // Salva no Realtime Database
+      await set(
+        ref(database, `${nomeLanchonete}/categories/${produtoSelecionado.section}/${produtoSelecionado.id}`),
+        {
+          name: produtoSelecionado.name,
+          description: produtoSelecionado.description,
+          price: parseFloat(produtoSelecionado.price),
+          composition: produtoSelecionado.composition || "",
+          options: produtoSelecionado.options || "",
+          opcionais: produtoSelecionado.opcionais || "",
+          adicionais: produtoSelecionado.adicionais || "",
+          upsell: produtoSelecionado.upsell || "",
+          imageUrl: imageUrl || "",
+          temMetade: produtoSelecionado.temMetade || false,
+          tamanhos: produtoSelecionado.tamanhos || [],
+          tamanhoLabel: produtoSelecionado.tamanhoLabel || "Tamanho",
+          fatiasLabel: produtoSelecionado.fatiasLabel || "Fatias"
+        }
+      );
 
-      // Atualiza a lista de produtos localmente
+      // Atualiza a lista local
       setProdutos(produtos.map(p =>
         p.id === produtoSelecionado.id && p.section === produtoSelecionado.section
-          ? { ...p, ...produtoSelecionado, imageUrl: imageUrl || p.imageUrl }
+          ? { ...p, ...produtoSelecionado, imageUrl }
           : p
       ));
 
+      // Limpa imagem temporária e fecha modal
+      setImageFile(null);
+      setImagePreview("");
       fecharModal();
+
     } catch (error) {
       console.error("Erro ao editar produto:", error);
       alert("Erro ao salvar edição");
     }
-  }; // Adicionei o ponto e vírgula aqui
+  };
 
-  // Corrigindo a função adicionarNovoProduto
   const adicionarNovoProduto = async () => {
+    console.log("Função adicionarNovoProduto foi chamada!");
+  
     if (!novoProduto.name || !novoProduto.description || !novoProduto.price) {
       alert("Preencha todos os campos obrigatórios!");
       return;
     }
-
+  
+    console.log("Dados válidos:", novoProduto);
+  
     try {
-      // Faz upload da imagem se existir
       let imageUrl = "";
+  
       if (imageFile) {
-        imageUrl = await handleImageUpload(imageFile);
+        console.log("Fazendo upload da imagem...");
+        imageUrl = await handleImageUpload(imageFile, nomeLanchonete);
+        console.log("Imagem enviada. URL:", imageUrl);
       }
-
+  
       const novoId = await getNextId(novoProduto.section);
+      console.log("Novo ID gerado:", novoId);
+  
       await set(ref(database, `${nomeLanchonete}/categories/${novoProduto.section}/${novoId}`), {
         name: novoProduto.name,
         description: novoProduto.description,
@@ -386,14 +437,15 @@ const abrirModal = (produto) => {
         opcionais: novoProduto.opcionais || "",
         adicionais: novoProduto.adicionais || "",
         upsell: novoProduto.upsell || "",
-        imageUrl: imageUrl || "",
+        imageUrl,
         temMetade: novoProduto.temMetade || false,
         tamanhos: novoProduto.tamanhos || [],
         tamanhoLabel: novoProduto.tamanhoLabel || "Tamanho",
         fatiasLabel: novoProduto.fatiasLabel || "Fatias"
       });
-
-      // Atualiza a lista de produtos localmente
+  
+      console.log("Produto salvo no banco!");
+  
       setProdutos([...produtos, {
         id: novoId,
         section: novoProduto.section,
@@ -405,15 +457,21 @@ const abrirModal = (produto) => {
         opcionais: novoProduto.opcionais || "",
         adicionais: novoProduto.adicionais || "",
         upsell: novoProduto.upsell || "",
-        imageUrl: imageUrl || ""
+        imageUrl
       }]);
-
+  
+      setImageFile(null);
+      setImagePreview("");
       fecharModal();
+      console.log("Produto adicionado com sucesso!");
+  
     } catch (error) {
       console.error("Erro ao adicionar produto:", error);
       alert("Erro ao adicionar produto. Verifique o console.");
     }
   };
+  
+
   const criarNovaSecao = async () => {
     if (!novaSecaoNome) {
       alert("Digite o nome da seção!");
@@ -478,7 +536,7 @@ const abrirModal = (produto) => {
         <table className="tabela-produtos">
           <thead>
             <tr>
-              <th>ID</th>
+              <th>Id</th>
               <th>Seção</th>
               <th>Nome</th>
               <th>Descrição</th>
@@ -500,86 +558,6 @@ const abrirModal = (produto) => {
           </tbody>
         </table>
 
-        {/* Modal de Edição */}
-        {modalAberto && produtoSelecionado && (
-          <div className="modal">
-            <div className="modal-content">
-              <h3>Editar Produto</h3>
-              <label>
-                Seção:
-                <select
-                  name="section"
-                  value={produtoSelecionado.section}
-                  onChange={handleChange}
-                  disabled
-                >
-                  {Object.keys(sections).map((sectionKey) => (
-                    <option key={sectionKey} value={sectionKey}>
-                      {sections[sectionKey].name}
-                    </option>
-                  ))}
-                </select>
-              </label>
-              <label>
-                Nome:
-                <input
-                  type="text"
-                  name="name"
-                  value={produtoSelecionado.name || ""}
-                  onChange={handleChange}
-                  required
-                />
-              </label>
-              <label>
-                Descrição:
-                <input
-                  type="text"
-                  name="description"
-                  value={produtoSelecionado.description || ""}
-                  onChange={handleChange}
-                  required
-                />
-              </label>
-              <label>
-                Preço:
-                <input
-                  type="number"
-                  name="price"
-                  value={produtoSelecionado.price || ""}
-                  onChange={handleChange}
-                  step="0.01"
-                  min="0"
-                  required
-                />
-              </label>
-              <label>
-                Composição:
-                <input
-                  type="text"
-                  name="composition"
-                  value={produtoSelecionado.composition || ""}
-                  onChange={handleChange}
-                />
-              </label>
-              <label>
-                Opções:
-                <input
-                  type="text"
-                  name="options"
-                  value={produtoSelecionado.options || ""}
-                  onChange={handleChange}
-                />
-              </label>
-              <div className="modal-actions">
-                <button className="btn-excluir" onClick={excluirProduto}>
-                  Excluir
-                </button>
-                <button className="btn-salvar" onClick={salvarEdicao}>Salvar</button>
-                <button className="btn-cancelar" onClick={fecharModal}>Cancelar</button>
-              </div>
-            </div>
-          </div>
-        )}
 
         {/* Modal de Edição */}
         {modalAberto && produtoSelecionado && (
@@ -592,6 +570,7 @@ const abrirModal = (produto) => {
                 <label className="image-upload-label">
                   Imagem do Produto (quadrada)
                   <div className="image-preview-container">
+                    {/* Exibe a imagem de preview ou a imagem já salva */}
                     {imagePreview || produtoSelecionado.imageUrl ? (
                       <img
                         src={imagePreview || produtoSelecionado.imageUrl}
@@ -601,18 +580,26 @@ const abrirModal = (produto) => {
                     ) : (
                       <div className="image-placeholder">Sem imagem</div>
                     )}
+
+                    {/* Input de arquivo escondido */}
                     <input
                       type="file"
                       accept="image/*"
                       onChange={handleImageChange}
                       className="image-upload-input"
+                      style={{ display: "none" }}
+                      id="input-imagem-produto"
                     />
-                    <button className="btn-upload-image">
+
+                    {/* Label que vai disparar o input */}
+                    <label htmlFor="input-imagem-produto" className="btn-upload-image">
                       {imagePreview || produtoSelecionado.imageUrl ? "Alterar Imagem" : "Adicionar Imagem"}
-                    </button>
+                    </label>
                   </div>
                 </label>
               </div>
+
+
 
               <div className="form-grid">
                 <div className="form-column">
@@ -817,27 +804,35 @@ const abrirModal = (produto) => {
                 <label className="image-upload-label">
                   Imagem do Produto (200px X 200px)
                   <div className="image-preview-container">
-                    {imagePreview ? (
+                    {/* Exibe a imagem de preview ou a imagem já salva */}
+                    {imagePreview || produtoSelecionado.imageUrl ? (
                       <img
-                        src={imagePreview}
+                        src={imagePreview || produtoSelecionado.imageUrl}
                         alt="Preview"
                         className="image-preview"
                       />
                     ) : (
                       <div className="image-placeholder">Sem imagem</div>
                     )}
+
+                    {/* Input de arquivo escondido */}
                     <input
                       type="file"
                       accept="image/*"
                       onChange={handleImageChange}
                       className="image-upload-input"
+                      style={{ display: "none" }}
+                      id="input-imagem-produto"
                     />
-                    <button className="btn-upload-image">
-                      {imagePreview ? "Alterar Imagem" : "Adicionar Imagem"}
-                    </button>
+
+                    <label htmlFor="input-imagem-produto" className="btn-upload-image">
+                      {imagePreview || produtoSelecionado.imageUrl ? "Alterar Imagem" : "Adicionar Imagem"}
+                    </label>
                   </div>
                 </label>
               </div>
+
+
 
 
 

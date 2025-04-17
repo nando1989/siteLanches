@@ -1,626 +1,103 @@
-/* styles/globals.css */
-body {
-  font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
-  margin: 0;
-  padding: 0;
-  background-color: rgb(209, 209, 209);
-  height: auto;
-}
-
 .container {
   display: flex;
-  align-items: center;
-  justify-content: center;
   flex-direction: column;
-  width:100%;
-  height: auto;
-  background-color: rgb(255, 255, 255);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
-  color: black;
+  min-height: 100vh;
+  font-family: 'Inter', sans-serif;
+  background-color: #ffffff;
+  color: #222;
 }
 
-.containerSlide{
-  width: 100%;
-  height:auto;
-  display: flex;
-  align-items: center;
-  justify-content: start;
-  flex-direction: column;
-}
-
-.swiper-wrapper{
-  width: 100vw;
-  height: auto;
-}
-
-.mySwiper {
-  width: 100%;
-  height:auto;
-  overflow: hidden;
-}
-
-.imgBanner {
-  width: 100%;
-  height: auto;
-  
-}
-
-
-.containerForm {
-  display: flex;
-  align-items: center;
-  justify-content: start;
-  flex-direction: column;
-  width: 100%;
-  height: 285px;
-}
-.containerAdress{
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: row;
-}
-
-.containerFooter{
-  background-color: #333336;
-  width: 100%;
-  height: 300px;
-  color:azure
-}
-
-h1 {
-  text-align: center;
-  margin-bottom: 20px;
-}
-.form div {
-  margin-bottom: 12px;
-}
-
-
-.containerSlide {
-  text-align: center;
-  margin-bottom: 20px;
-}
-
-/* Estilizando as setas */
-.swiper-button-next,
-.swiper-button-prev {
-  color: yellow; /* Cor das setas */
-}
-
-/* Cor das bolinhas */
-.swiper-pagination-bullet {
-  background: yellow; /* Cor das bolinhas inativas */
-}
-
-/* Cor da bolinha ativa */
-.swiper-pagination-bullet-active {
-  background: yellow; /* Cor da bolinha ativa */
-}
-
-
-
-
-/* 
-//main lanchonete */
-
-.containerTitleServices {
-  width: 90%;
-  height: 430px;
-
-}
-
-.containerOpen{
-  width: 100%;
-  height: auto;
+.header {
   display: flex;
   justify-content: space-between;
-
-}
-
-.containerMin{
-  display: flex;
   align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  height: auto;
-  color: rgb(77, 18, 18);
+  padding: 1.5rem 2rem;
+  background-color: #fff;
+  border-bottom: 1px solid #eee;
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
 
-.containerWellcome{
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  height: 90px;
-  background-color: rgb(255, 174, 0);
-  border-radius: 15px;
-  margin-top: 10px;
-  padding-left: 18px;
-  color: rgb(77, 18, 18);
-  font-weight: 800;
-  margin-top: 20px;
-  margin-bottom: 20px;
+.logo {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #e60023;
 }
 
-.containerHour{
+.nav {
   display: flex;
-  margin-bottom: 5px;
-  color: rgb(77, 18, 18);
-}
-
-.hour{
-  font-weight: 800;
-  color: rgb(77, 18, 18);
-  margin-right: 10px;
-}
-
-.containerbuttonOpen{
-  display: flex;
-  width: 60px;
-  background-color: rgb(255, 174, 0);
-  border-radius: 5px;
-  font-size: small;
-  font-weight:900;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding-top: 3px;
-  margin-right: 5px;
-  color: rgb(77, 18, 18);
-}
-
-.containerbuttonAvaliation{
-  display: flex;
-  width: 65px;
-  background-color: rgb(255, 174, 0);
-  border-radius: 5px;
-  font-size: small;
-  font-weight:900;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding-top: 3px;
-  color: rgb(77, 18, 18);
-}
-
-.containerWhatsapp{
-  font-weight: 800;
-  color: rgb(77, 18, 18);
-  display: flex;
-  margin: 0;
-  display: flex;
+  gap: 1.5rem;
   align-items: center;
 }
 
-.containerWhatsapp p{
-  
-  margin: 0;
-  margin-top: 1px;
-  margin-left: 3px;
+.nav a {
+  text-decoration: none;
+  color: #333;
+  font-weight: 500;
+  transition: color 0.3s;
+}
+
+.nav a:hover {
+  color: #e60023;
+}
+
+.loginButton {
+  background: none;
+  border: 1px solid #e60023;
+  color: #e60023;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
   cursor: pointer;
+  transition: background 0.3s, color 0.3s;
 }
 
-.containerStar{
-  display: flex;
-  margin-top: 3px;
-  margin-right: 4px;
+.loginButton:hover {
+  background: #e60023;
+  color: #fff;
 }
 
-.faStar{
-  margin-right: 2px;
-  width: 22px;
-  height: 20px;
-  margin-top: 3px;
-  color: rgb(255, 174, 0);
+.main {
+  text-align: center;
+  padding: 2rem 2rem;
+  flex: 1;
 }
 
-.faWhatsapp{
-  width: 35px;
-  height: 30px;
-  margin-top: 3px;
-  color: rgb(54, 238, 30);
+.title {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
 }
 
-.avaliation p {
-  margin: 0;
-
+.subtitle {
+  font-size: 1.25rem;
+  margin-bottom: 2rem;
+  color: #666;
 }
 
-.avaliation {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-}
-
-.containerButtonMenu {
-  display: flex;
-  gap: 10px; /* Espaço entre os botões */
-  overflow-x: auto; /* Habilita o scroll horizontal */
-  white-space: nowrap; /* Impede que os botões quebrem de linha */
-  scrollbar-width: thin; /* Para navegadores compatíveis */
-}
-
-.containerButtonMenu button {
-  flex: 0 0 auto; /* Garante que os botões não cresçam além do necessário */
-  padding: 10px 21px;
+.ctaButton {
+  background-color: #e60023;
+  color: #fff;
+  padding: 1rem 2rem;
   border: none;
-  background-color: rgb(255, 174, 0);
+  border-radius: 8px;
+  font-size: 1rem;
   cursor: pointer;
-  border-radius: 5px;
-  margin-bottom: 10px;
-  font-weight:900;
-  font-size:medium;
-  color: rgb(77, 18, 18);
+  transition: background 0.3s;
 }
 
-
-.inputContainer {
-  position: relative;
-  width: 97%;
-  max-width: 300px; /* Defina um tamanho conforme necessário */
+.ctaButton:hover {
+  background-color: #cc001f;
 }
 
-.inputContainer input {
-  width: 97%;
-  padding: 10px 40px; /* Espaço à esquerda para o ícone */
-  border: 1px solid rgb(255, 174, 0);
-  border-radius: 5px;
-  outline: none;
-  margin-top: 3px;
-  color: rgb(255, 174, 0);
-  font-size: medium;
-  margin-left: 10px;
+.heroImage {
+  margin-top: 3rem;
+  border-radius: 12px;
 }
 
-.searchIcon {
-  position: absolute;
-  left: 10px; /* Posiciona o ícone dentro do input */
-  top: 53%;
-  transform: translateY(-50%);
-  color: rgb(255, 174, 0);
-  font-size: 18px;
-}
-
-.imgFood{
-  
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  width: 90%;
-}
-
-.titleFood{
-  background-color: rgb(255, 174, 0);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 98%;
-  border-radius: 15px;
-}
-
-.titleHamburguer h2{
-  margin: 0;
-
-}
-
-.imghamburguer{
-  width: 400px;
-  display: none;
-}
-
-.containerButtonInput{
-  display: flex;
-  justify-content: center;
-}
-
-
-
-
-
-
-
-
-@media (max-width: 600px) {
-  
-  .imgBanner{
-    width: 350px;
-    height: auto;
-  }
-
-  .containerSlide{
-    width: 100%;
-    height:auto;
-    display: flex;
-    align-items: center;
-    justify-content: start;
-    flex-direction: column;
-  }
-  .mySwiper {
-    width: 100%;
-    height: auto;
-    overflow: hidden;
-  }
-
-  .swiper-slide {
-    width: 100%;
-    height: auto;
-  }
-
-  .containerForm {
-    display: flex;
-    align-items: center;
-    justify-content: start;
-    flex-direction: column;
-    width: 100%;
-    height:257px;
-  }
-
-  .containerForm h3{
-     font-size: 18px;
-   
-    
-  }
-
-  .containerTitleServices {
-    width: 90%;
-    height: 230px;
-
-  }
-
-  .containerOpen{
-    width: 100%;
-    height: auto;
-    display: flex;
-    justify-content: space-between;
-
-  }
-
-  .containerMin{
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 100%;
-    height: auto;
-    color: rgb(77, 18, 18);
-  }
-
-  .containerWellcome{
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 95%;
-    height: 90px;
-    background-color: rgb(255, 174, 0);
-    border-radius: 15px;
-    margin-top: 10px;
-    padding-left: 18px;
-    color: rgb(77, 18, 18);
-    font-weight: 800;
-    margin-top: 10px;
-    margin-bottom: 10px;
-  }
-
-  .containerHour{
-    display: flex;
-    margin-bottom: 5px;
-    color: rgb(77, 18, 18);
-  }
-
-  .hour{
-    font-weight: 800;
-    color: rgb(77, 18, 18);
-    margin-right: 10px;
-  }
-
-  .containerbuttonOpen{
-    display: flex;
-    width: 60px;
-    background-color: rgb(255, 174, 0);
-    border-radius: 5px;
-    font-size: small;
-    font-weight:900;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    padding-top: 3px;
-    margin-right: 5px;
-    color: rgb(77, 18, 18);
-  }
-
-  .containerbuttonAvaliation{
-    display: flex;
-    width: 65px;
-    background-color: rgb(255, 174, 0);
-    border-radius: 5px;
-    font-size: small;
-    font-weight:900;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    padding-top: 3px;
-    color: rgb(77, 18, 18);
-  }
-
-  .containerWhatsapp{
-    font-weight: 800;
-    color: rgb(77, 18, 18);
-    display: flex;
-    margin: 0;
-  }
-
-  .containerWhatsapp p{
-    margin: 0;
-    margin-left: 3px;
-  }
-
-  .containerStar{
-    display: flex;
-    margin-top: 3px;
-    margin-right: 4px;
-  }
-
-  .faStar{
-    margin-right: 2px;
-    width: 22px;
-    height: 20px;
-    margin-top: 3px;
-    color: rgb(255, 174, 0);
-  }
-
-  .faWhatsapp{
-    width: 25px;
-    height: 20px;
-    margin-top: 3px;
-    color: rgb(255, 174, 0);
-  }
-
-  .avaliation p {
-    margin: 0;
-
-  }
-
-  .avaliation {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-  }
-
-  .containerButtonInput{
-    display: flex;
-    justify-content: center;
-    flex-direction: column;
-  }
-
-  .containerButtonMenu {
-    display: flex;
-    gap: 10px; /* Espaço entre os botões */
-    overflow-x: auto; /* Habilita o scroll horizontal */
-    white-space: nowrap; /* Impede que os botões quebrem de linha */
-    
-    scrollbar-width: thin; /* Para navegadores compatíveis */
-  }
-  
-  .containerButtonMenu button {
-    flex: 0 0 auto; /* Garante que os botões não cresçam além do necessário */
-    padding: 10px 21px;
-    border: none;
-    background-color: brown;
-    cursor: pointer;
-    border-radius: 5px;
-    margin-bottom: 10px;
-    font-weight:900;
-    font-size:medium;
-    color: rgb(255, 255, 255);
-  }
-
- 
-  .inputContainer {
-    position: relative;
-    width: 97%;
-    max-width: 300px; /* Defina um tamanho conforme necessário */
-  }
-  
-  .inputContainer input {
-    width: 85%;
-    padding: 10px 40px; /* Espaço à esquerda para o ícone */
-    border: 1px solid rgb(255, 174, 0);
-    border-radius: 5px;
-    outline: none;
-    margin-top: 5px;
-    color: rgb(255, 174, 0);
-    font-size: medium;
-    margin: 0;
-  }
-  
-  .searchIcon {
-    position: absolute;
-    left: 10px; /* Posiciona o ícone dentro do input */
-    top: 53%;
-    transform: translateY(-50%);
-    color: rgb(255, 174, 0);
-    font-size: 18px;
-  }
-
-  .imgFood{
-    width: 90%;
-  }
-
-  .titleFood{
-    background-color: rgb(255, 174, 0);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    margin-bottom: 10px;
-    border-radius: 5px;
-  }
-
-  .titleFood h2{
-    color: rgb(77, 18, 18);
-    margin: 0;
-
-  }
-
-  .imghamburguer{
-    width: 100%;
-    display: flex;
-    margin-bottom: 5px;
-    border-radius: 5px;
-  }
-  
-
-  
-  
-
- 
-  
-
-
-
-
-
-
-
-  .imgBanner {
-    width: 100%;
-    height: auto;
-  }
-  
-  .containerSlide {
-    text-align: center;
-    text-shadow: #333336;
-  }
-
-  /* Estilizando as setas */
-.swiper-button-next,
-.swiper-button-prev {
-  color: rgb(220, 253, 33); /* Cor das setas */
-}
-
-/* Cor das bolinhas */
-.swiper-pagination-bullet {
-  background: rgb(56, 56, 56); /* Cor das bolinhas inativas */
-}
-
-/* Cor da bolinha ativa */
-.swiper-pagination-bullet-active {
-  background: rgb(2, 2, 2); /* Cor da bolinha ativa */
-}
-
-
-
-.whatsapp-button-img {
-  width: 50px;
-  height: 50px;
-}
-
-
-  
-
-
+.footer {
+  text-align: center;
+  padding: 2rem;
+  background-color: #f8f8f8;
+  font-size: 0.9rem;
+  color: #999;
 }

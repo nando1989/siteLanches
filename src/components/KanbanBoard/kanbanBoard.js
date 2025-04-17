@@ -10,9 +10,10 @@ import "./style.css";
 const KanbanBoard = ({ nomeLanchonete = "default" }) => {
   const [pedidos, setPedidos] = useState([]);
 
-  const buscarPedidos = () => {
+  const buscarPedidos = async () => {
     // Corrigindo o nome da variável para manter consistência
     const pedidosRef = ref(database, `${nomeLanchonete}/pedidos`);
+    const snapshot = await get(pedidosRef);
 
     onValue(pedidosRef, (snapshot) => {
       const data = snapshot.val();
